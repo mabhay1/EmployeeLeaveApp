@@ -1,0 +1,91 @@
+<div class="app-shell" [ngClass]="isSidebarCollapsed?'sidebar-collapsed':''">
+  <aside class="app-sidebar" aria-label="Main navigation">
+    <div class="sidebar-header">
+      <a class="sidebar-brand"  aria-label="LeaveFlow home">
+        <span class="sidebar-brand-icon"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></span>
+        <span class="sidebar-brand-name">Leave<span>Flow</span></span>
+      </a>
+      <button class="sidebar-toggle-btn" type="button" aria-label="Toggle sidebar" (click)="toggleSideBar()">
+        <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <div class="sidebar-section-label">WORKSPACE</div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link" routerLinkActive="active" routerLink="/admin/dashboard" aria-current="page" title="Dashboard">
+        <i class="fa-solid fa-table-columns" aria-hidden="true"></i>
+        <span class="sidebar-link-label">Dashboard</span>
+      </a>
+      <a class="sidebar-link" title="Employees">
+        <i class="fa-solid fa-users" aria-hidden="true"></i>
+        <span class="sidebar-link-label">Employees</span>
+      </a>
+      <a class="sidebar-link" routerLinkActive="active" routerLink="/admin/department" title="Departments">
+        <i class="fa-solid fa-building" aria-hidden="true"></i>
+        <span class="sidebar-link-label">Departments</span>
+      </a>
+      <a class="sidebar-link" title="Leave requests">
+        <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
+        <span class="sidebar-link-label">Leave requests</span>
+        <span class="sidebar-count">4</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-section-label sidebar-section-secondary">PERSONAL</div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-link"  title="My leave">
+        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+        <span class="sidebar-link-label">My leave</span>
+      </a>
+      <a class="sidebar-link"  title="Settings">
+        <i class="fa-solid fa-gear" aria-hidden="true"></i>
+        <span class="sidebar-link-label">Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" aria-hidden="true">{{loggedUserData?.employeeName|getInitials}}</div>
+        <div class="sidebar-user-details">
+          <span class="sidebar-user-name">{{loggedUserData?.employeeName}}</span>
+          <span class="sidebar-user-role">{{loggedUserData?.role}}</span>
+        </div>
+        <button class="sidebar-logout" type="button" aria-label="Log off" title="Log off" (click)="onLogOff()">
+          <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+          <span class="sidebar-logout-label">Log off</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main">
+    <header class="app-topbar">
+      <div class="topbar-title">
+        <span class="topbar-eyebrow">MONDAY, NOVEMBER 02, 2026</span>
+        <h1>Dashboard</h1>
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-icon-btn" type="button" aria-label="Search">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+        </button>
+        <button class="topbar-icon-btn notification-btn" type="button" aria-label="Notifications">
+          <i class="fa-regular fa-bell" aria-hidden="true"></i>
+          <span class="notification-dot"></span>
+        </button>
+        <div class="topbar-divider"></div>
+        <div class="topbar-profile">
+          <div class="topbar-avatar" aria-hidden="true">{{loggedUserData?.employeeName|getInitials}}</div>
+          <div class="topbar-profile-copy">
+            <span>{{loggedUserData?.employeeName}}</span>
+            <small>{{loggedUserData?.role}}</small>
+          </div>
+          <i class="fa-solid fa-chevron-down topbar-chevron" aria-hidden="true"></i>
+        </div>
+      </div>
+    </header>
+
+    <section class="app-content">
+      <router-outlet/>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,167 @@
+<section class="department-page">
+  <header class="row align-items-center g-2 department-page-header">
+    <div class="col">
+      <p class="department-eyebrow">ORGANIZATION</p>
+      <h1>Departments</h1>
+      <p class="department-subtitle">Create and manage departments and their department heads.</p>
+    </div>
+    <div class="col-auto">
+      <button *ngIf="!isFormOpen" class="btn btn-primary department-add-btn" type="button" (click)="openCloseForm(true)">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+        Add department
+      </button>
+    </div>
+  </header>
+
+  <div class="row g-4">
+    <section [ngClass]="isFormOpen?'col-xl-8':'col-12'" aria-labelledby="department-list-heading">
+      <div class="department-card department-table-card">
+        <div class="row align-items-center g-2 department-card-header">
+          <div class="col">
+            <h2 id="department-list-heading">Department list</h2>
+            <p>View and update your organization's departments.</p>
+          </div>
+          <div class="col-auto">
+            <span class="department-total"><i class="fa-solid fa-building" aria-hidden="true"></i> {{departmentList().length|number:'2.0-0'}} departments</span>
+          </div>
+        </div>
+
+        <div class="row align-items-center g-2 department-table-toolbar">
+          <div class="col">
+            <div class="department-search">
+              <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+              <input class="form-control" type="search" placeholder="Search departments" aria-label="Search departments" />
+            </div>
+          </div>
+          <div class="col-auto">
+            <button class="btn department-filter-btn" type="button">
+              <i class="fa-solid fa-arrow-down-wide-short" aria-hidden="true"></i>
+              Filter
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table department-table align-middle mb-0">
+            <thead>
+              <tr>
+                <th scope="col">DEPARTMENT</th>
+                <th scope="col">DEPARTMENT HEAD</th>
+                <th scope="col">CREATED DATE</th>
+                <th scope="col"><span class="visually-hidden">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of departmentList(); track $index) {
+                <tr>
+                  <td><span class="department-name"><span class="department-initial initial-violet">{{item.deptName|getInitials}}</span>{{item.deptName}}</span></td>
+                  <td><span class="head-name">{{item.deptHeadName|na:'Not Assigned'}}</span></td>
+                  <td>{{item.createdDate|date:'dd MMM yyyy'}}</td>
+                  <td>
+                    <div class="btn-group department-row-actions">
+                      <button class="row-action-btn" type="button" aria-label="Edit Marketing" title="Edit" (click)="onEdit(item)"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></button>
+                      <button class="row-action-btn row-action-delete" type="button" aria-label="Delete Marketing" title="Delete" (click)="onDelete(item.deptId)"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <footer class="row align-items-center g-2 department-table-footer">
+          <span class="col">Showing <strong>1–5</strong> of <strong>6</strong> departments</span>
+          <nav class="col-auto" aria-label="Department pages">
+            <ul class="pagination department-pagination mb-0">
+              <li class="page-item disabled">
+                <a class="page-link" href="#" aria-label="Previous page">
+                  <i class="fa-solid fa-chevron-left" aria-hidden="true"></i>
+                </a>
+              </li>
+              <li class="page-item active" aria-current="page">
+                <a class="page-link" href="#">1</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#" aria-label="Next page">
+                  <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </footer>
+      </div>
+    </section>
+
+    <aside *ngIf="isFormOpen" class="col-12 col-xl-4" aria-labelledby="department-form-heading">
+      <div class="department-card department-form-card">
+        <div class="row align-items-start g-2 department-card-header department-form-header">
+          <div class="col-auto">
+            <div class="form-heading-icon"><i class="fa-solid fa-building" aria-hidden="true"></i></div>
+          </div>
+          <div class="col">
+            <span class="form-mode-label">DEPARTMENT DETAILS</span>
+            <h2 id="department-form-heading">Add department</h2>
+            <p>Enter the department information below.</p>
+          </div>
+          <div class="col-auto">
+            <button class="department-close-btn" type="button" aria-label="Close department form" title="Close form" (click)="openCloseForm(false)">
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <form class="department-form" #form="ngForm">
+          <div class="mb-3">
+            <label class="form-label" for="deptName">Department name <span>*</span></label>
+            <input
+              class="form-control department-input"
+              type="text"
+              id="deptName"
+              [(ngModel)]="departmentObj.deptName"
+              name="deptName"
+              placeholder="e.g. Marketing"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="deptHeadEmpId">Department head</label>
+            <select class="form-select department-input" id="deptHeadEmpId" [(ngModel)]="departmentObj.deptHeadEmpId" name="deptHeadEmpId">
+              <option value="0">Select a department head</option>
+              <!-- <option value="1024">Priya Mehta · EMP-1024</option> -->
+            </select>
+          </div>
+
+          <div class="row align-items-center g-2">
+            <div class="col-auto">
+              <button class="btn department-reset-btn" type="button" (click)="onReset(form)">
+                <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                Reset
+              </button>
+            </div>
+            <div class="col">
+              <div class="row g-2">
+                @if (departmentObj.deptId===0) {
+                  <div class="col-6">
+                    <button class="btn department-save-btn w-100" type="button" (click)="onCreateDepartment(form)">
+                      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                      Save department
+                    </button>
+                  </div>
+                }@else {
+                  <div class="col-6">
+                    <button class="btn department-update-btn w-100" type="button" (click)="onUpdateDepartment(form)">
+                      <i class="fa-regular fa-floppy-disk" aria-hidden="true"></i>
+                      Update department
+                    </button>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </aside>
+  </div>
+</section>

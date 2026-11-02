@@ -1,0 +1,115 @@
+<main class="login-page">
+  <section class="login-showcase" aria-label="Employee leave management">
+    <div class="showcase-orb showcase-orb-one"></div>
+    <div class="showcase-orb showcase-orb-two"></div>
+
+    <a class="brand brand-on-dark" href="#" aria-label="LeaveFlow home">
+      <span class="brand-mark"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></span>
+      <span>Leave<span class="brand-accent">Flow</span></span>
+    </a>
+
+    <div class="showcase-content">
+      <span class="showcase-eyebrow"><span class="eyebrow-dot"></span> PEOPLE-FIRST, SIMPLIFIED</span>
+      <h1>Time away,<br />made <span>easy.</span></h1>
+      <p class="showcase-description">
+        A better way to request, manage, and approve time off — all in one place.
+      </p>
+
+      <div class="leave-card" aria-label="Leave request status preview">
+        <div class="leave-card-top">
+          <div class="leave-card-icon"><i class="fa-regular fa-sun" aria-hidden="true"></i></div>
+          <div>
+            <p class="leave-card-title">Summer break</p>
+            <p class="leave-card-dates">Aug 12 – Aug 16 · 5 days</p>
+          </div>
+          <span class="leave-status"><span></span> Approved</span>
+        </div>
+        <div class="leave-card-divider"></div>
+        <div class="leave-card-bottom">
+          <div class="avatar-stack" aria-hidden="true">
+            <span class="avatar avatar-one">AM</span>
+            <span class="avatar avatar-two">JL</span>
+            <span class="avatar avatar-three"><i class="fa-solid fa-check"></i></span>
+          </div>
+          <span>Reviewed by your department head</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="showcase-footer">
+      <span><i class="fa-solid fa-shield-halved" aria-hidden="true"></i> Your workplace, in sync</span>
+      <span>BUILT FOR BETTER WORKDAYS</span>
+    </div>
+  </section>
+
+  <section class="login-panel" aria-labelledby="login-heading">
+    <div class="login-panel-inner">
+      <a class="brand brand-on-light" href="#" aria-label="LeaveFlow home">
+        <span class="brand-mark"><i class="fa-solid fa-calendar-check" aria-hidden="true"></i></span>
+        <span>Leave<span class="brand-accent">Flow</span></span>
+      </a>
+
+      <div class="login-heading">
+        <p class="welcome-label">WELCOME BACK</p>
+        <h2 id="login-heading">Sign in to your account</h2>
+        <p class="login-subtitle">Enter your work details to continue to your employee, HR, or department head workspace.</p>
+      </div>
+
+      <form class="login-form">
+        <div class="mb-4">
+          <label for="emailId" class="form-label">Work email</label>
+          <div class="input-wrap">
+            <i class="fa-regular fa-envelope input-icon" aria-hidden="true"></i>
+            <input
+              class="form-control login-input"
+              type="email"
+              id="emailId"
+              [(ngModel)]="loginObj.emailId"
+              name="emailId"
+              placeholder="you@company.com"
+              autocomplete="username"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="password-group">
+          <!-- <div class="password-label-row">
+            <label for="password" class="form-label">Password</label>
+            <a class="text-link" href="#">Forgot password?</a>
+          </div> -->
+          <div class="input-wrap">
+            <i class="fa-solid fa-lock input-icon" aria-hidden="true"></i>
+            <input
+              class="form-control login-input"
+              type="password"
+              id="password"
+              [(ngModel)]="loginObj.password"
+              name="password"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+            />
+            <i class="fa-regular fa-eye password-visibility" aria-hidden="true"></i>
+          </div>
+        </div>
+
+        <button class="btn login-submit" type="button" (click)="onLoginUser()">
+          Sign in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        </button>
+      </form>
+
+      <div class="secure-note">
+        <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+        <span>Your information is protected and secure</span>
+      </div>
+
+      <p class="login-help">Need access? <a class="text-link" href="#">Contact your HR team</a></p>
+    </div>
+
+    <footer class="login-footer">
+      <span>© 2026 LeaveFlow</span>
+      <a href="#">Privacy &amp; security</a>
+    </footer>
+  </section>
+</main>

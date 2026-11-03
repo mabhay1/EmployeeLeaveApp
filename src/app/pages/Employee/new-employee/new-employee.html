@@ -1,0 +1,146 @@
+<section class="new-employee-page">
+  <header class="row align-items-center g-3 new-employee-header">
+    <div class="col">
+      <p class="employee-eyebrow">PEOPLE MANAGEMENT</p>
+      <h1>New employee</h1>
+      <p class="new-employee-subtitle">Add an employee and assign their department and role.</p>
+    </div>
+    <div class="col-auto">
+      <a class="btn employee-back-btn" routerLink="/admin/employees">
+        <i class="fa-solid fa-arrow-left me-2" aria-hidden="true"></i>
+        Back to employees
+      </a>
+    </div>
+  </header>
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-9">
+      <section class="new-employee-card" aria-labelledby="employee-form-heading">
+        <div class="row align-items-center g-3 new-employee-card-header">
+          <div class="col-auto">
+            <span class="new-employee-icon"><i class="fa-solid fa-user-plus" aria-hidden="true"></i></span>
+          </div>
+          <div class="col">
+            <p class="new-employee-form-eyebrow">EMPLOYEE PROFILE</p>
+            <h2 id="employee-form-heading">Employee information</h2>
+            <p>Enter the employee's personal and work details.</p>
+          </div>
+        </div>
+
+        <form class="new-employee-form" [formGroup]="employeeForm">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="employeeName">Full name <span>*</span></label>
+              <input
+                class="form-control employee-form-control"
+                type="text"
+                id="employeeName"
+                formControlName="employeeName"
+                name="employeeName"
+                placeholder="e.g. Aarav Sharma"
+                autocomplete="name"
+                required
+              />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="contactNo">Contact number <span>*</span></label>
+              <input
+                class="form-control employee-form-control"
+                type="tel"
+                id="contactNo"
+                formControlName="contactNo"
+                name="contactNo"
+                placeholder="e.g. 9000000401"
+                autocomplete="tel"
+                required
+              />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="emailId">Email address <span>*</span></label>
+              <input
+                class="form-control employee-form-control"
+                type="email"
+                id="emailId"
+                formControlName="emailId"
+                name="emailId"
+                placeholder="name@company.com"
+                autocomplete="email"
+                required
+              />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="password">Temporary password <span>*</span></label>
+              <input
+                class="form-control employee-form-control"
+                type="password"
+                id="password"
+                formControlName="password"
+                name="password"
+                placeholder="Enter a temporary password"
+                autocomplete="new-password"
+                required
+              />
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="deptId">Department <span>*</span></label>
+              <select formControlName="deptId" class="form-select employee-form-control" id="deptId" name="deptId" required>
+                <option value="" selected disabled>Select a department</option>
+                @for (department of departmentListObs$|async; track $index) {
+                  <option [value]="department.deptId">{{department.deptName}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="role">Role <span>*</span></label>
+              <select formControlName="role" class="form-select employee-form-control" id="role" name="role" required>
+                <option value="" selected disabled>Select a role</option>
+                @for (item of roleList; track $index) {
+                  <option>{{item}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="gender">Gender <span>*</span></label>
+              <select formControlName="gender" class="form-select employee-form-control" id="gender" name="gender" required>
+                <option value="" selected disabled>Select gender</option>
+                @for (item of genderList; track $index) {
+                  <option>{{item}}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="row align-items-center g-2 new-employee-form-footer">
+            <div class="col">
+              <p class="required-note"><span>*</span> Required fields</p>
+            </div>
+            <div class="col-auto">
+              <div class="row g-2">
+                <div class="col-12 col-sm-auto">
+                  <button class="btn employee-cancel-btn" type="button" (click)="onCancel()">Cancel</button>
+                </div>
+                @if(currentEmployeeId===0){
+                  <div class="col-12 col-sm-auto">
+                    <button class="btn employee-save-btn" type="button" (click)="onSaveForm()">
+                      <i class="fa-solid fa-plus me-2" aria-hidden="true"></i>
+                      Save employee
+                    </button>
+                  </div>
+                }
+                @else {
+                  <div class="col-12 col-sm-auto">
+                    <button class="btn employee-update-btn" type="button" (click)="onUpdateForm()">
+                      <i class="fa-regular fa-floppy-disk me-2" aria-hidden="true"></i>
+                      Update
+                    </button>
+                  </div>
+                }
+
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</section>

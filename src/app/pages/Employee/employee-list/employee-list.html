@@ -1,0 +1,114 @@
+<section class="employee-page">
+  <header class="row align-items-center g-3 employee-page-header">
+    <div class="col">
+      <p class="employee-eyebrow">PEOPLE MANAGEMENT</p>
+      <h1>Employees</h1>
+      <p class="employee-page-subtitle">View and manage your organization's employees.</p>
+    </div>
+    <div class="col-auto">
+      <button class="btn employee-add-btn" type="button" routerLink="/admin/new-employee/0">
+        <i class="fa-solid fa-plus me-2" aria-hidden="true"></i>
+        Add employee
+      </button>
+    </div>
+  </header>
+
+  <section class="employee-card" aria-labelledby="employee-list-heading">
+    <div class="row align-items-center g-3 employee-card-header">
+      <div class="col">
+        <h2 id="employee-list-heading">Employee directory</h2>
+        <p>Browse employee details, departments, and access roles.</p>
+      </div>
+      <div class="col-auto">
+        <span class="employee-count"><i class="fa-solid fa-users me-2" aria-hidden="true"></i>{{employees().length}} employees</span>
+      </div>
+    </div>
+
+    <div class="row align-items-center g-2 employee-toolbar">
+      <div class="col-12 col-md">
+        <div class="employee-search">
+          <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+          <input class="form-control" type="search" placeholder="Search by name, email or ID" aria-label="Search employees" />
+        </div>
+      </div>
+      <div class="col-12 col-md-auto">
+        <div class="row g-2">
+          <div class="col-6">
+            <select class="form-select employee-filter" aria-label="Filter by department">
+              <option selected>All departments</option>
+              <option>Engineering</option>
+              <option>Marketing</option>
+              <option>Finance</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <select class="form-select employee-filter" aria-label="Filter by role">
+              <option value="">All roles</option>
+              @for (role of globalConstantValue.ROLE_LIST; track $index) {
+                <option>{{role}}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table employee-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th scope="col">EMPLOYEE</th>
+            <th scope="col">CONTACT</th>
+            <th scope="col">DEPARTMENT</th>
+            <th scope="col">ROLE</th>
+            <th scope="col" class="text-end"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (employee of employees(); track $index) {
+            <tr>
+              <td>
+                <div class="employee-identity d-flex align-items-center gap-2">
+                  <span class="employee-avatar avatar-violet">{{employee.employeeName|getInitials}}</span>
+                  <span><strong>{{employee.employeeName}}</strong><small>{{employee.emailId}}</small></span>
+                </div>
+              </td>
+              <td>{{employee.contactNo}}</td>
+              <td>
+                <span class="department-label">
+                  <span>
+                    <strong>{{employee.deptName}}</strong>
+                  </span>
+                </span>
+              </td>
+              <td>
+                <span class="role-badge" [ngClass]="{
+                  'role-head':employee.role===globalConstantValue.ROLE.DEPARTMENT_HEAD,
+                  'role-employee':employee.role===globalConstantValue.ROLE.EMPLOYEE,
+                  'role-hr':employee.role===globalConstantValue.ROLE.HR
+                }">{{employee.role}}</span>
+              </td>
+              <td class="text-end">
+                <button (click)="onEdit(employee.employeeId)" class="employee-action" type="button" title="Edit"><i class="fa-regular fa-pen-to-square" aria-hidden="true"></i></button>
+                <button (click)="onDelete(employee.employeeId)" class="employee-action employee-action-delete" type="button" title="Delete"><i class="fa-regular fa-trash-can" aria-hidden="true"></i></button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <footer class="row align-items-center g-2 employee-table-footer">
+      <div class="col">Showing <strong>1–5</strong> of <strong>148</strong> employees</div>
+      <nav class="col-auto" aria-label="Employee pages">
+        <ul class="pagination employee-pagination mb-0">
+          <li class="page-item disabled"><a class="page-link" href="#" aria-label="Previous page"><i class="fa-solid fa-chevron-left" aria-hidden="true"></i></a></li>
+          <li class="page-item active" aria-current="page"><a class="page-link" href="#">1</a></li>
+          <li class="page-item"><a class="page-link" href="#">2</a></li>
+          <li class="page-item"><a class="page-link" href="#">3</a></li>
+          <li class="page-item"><a class="page-link" href="#" aria-label="Next page"><i class="fa-solid fa-chevron-right" aria-hidden="true"></i></a></li>
+        </ul>
+      </nav>
+    </footer>
+  </section>
+</section>

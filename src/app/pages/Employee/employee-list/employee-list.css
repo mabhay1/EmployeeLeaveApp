@@ -1,0 +1,376 @@
+:host {
+  display: block;
+}
+
+.employee-page {
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  color: var(--text-main);
+}
+
+.employee-page-header {
+  margin-bottom: 18px;
+}
+
+.employee-eyebrow {
+  margin: 0 0 7px;
+  color: var(--primary);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1.15px;
+}
+
+.employee-page-header h1 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: clamp(22px, 2.3vw, 27px);
+  font-weight: 720;
+  letter-spacing: -1px;
+}
+
+.employee-page-subtitle {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.employee-add-btn {
+  border-color: var(--primary);
+  color: #fff;
+  background: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.employee-add-btn:hover,
+.employee-add-btn:focus {
+  border-color: var(--primary-dark);
+  color: #fff;
+  background: var(--primary-dark);
+}
+
+.employee-card {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 5px 20px rgba(46, 16, 101, 0.035);
+}
+
+.employee-card-header {
+  margin: 0;
+  padding: 16px 19px;
+}
+
+.employee-card-header h2 {
+  margin: 0;
+  color: var(--text-main);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.employee-card-header p {
+  margin: 5px 0 0;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.employee-count {
+  display: inline-block;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.employee-count i {
+  color: var(--primary);
+}
+
+.employee-toolbar {
+  margin: 0;
+  padding: 10px 19px;
+  border-top: 1px solid #f1eef7;
+  border-bottom: 1px solid #f1eef7;
+}
+
+.employee-search {
+  position: relative;
+  max-width: 360px;
+}
+
+.employee-search > i {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  z-index: 1;
+  color: #9691ad;
+  font-size: 11px;
+  transform: translateY(-50%);
+}
+
+.employee-search .form-control {
+  height: 36px;
+  padding: 0 12px 0 34px;
+  border-color: var(--border);
+  border-radius: 7px;
+  color: var(--text-main);
+  font-size: 10px;
+  box-shadow: none;
+}
+
+.employee-search .form-control::placeholder {
+  color: #a7a3b8;
+}
+
+.employee-search .form-control:focus,
+.employee-filter:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.employee-filter {
+  min-width: 135px;
+  height: 36px;
+  border-color: var(--border);
+  border-radius: 7px;
+  color: var(--text-muted);
+  font-size: 10px;
+  box-shadow: none;
+}
+
+.employee-table {
+  min-width: 850px;
+  color: var(--text-muted);
+  font-size: 10px;
+}
+
+.employee-table thead th {
+  height: 38px;
+  padding: 0 12px;
+  border-bottom: 1px solid #f1eef7;
+  color: #928da9;
+  background: #fcfbfe;
+  font-size: 8px;
+  font-weight: 750;
+  letter-spacing: 0.7px;
+  white-space: nowrap;
+}
+
+.employee-table thead th:first-child,
+.employee-table tbody td:first-child {
+  padding-left: 19px;
+}
+
+.employee-table thead th:last-child,
+.employee-table tbody td:last-child {
+  padding-right: 19px;
+}
+
+.employee-table tbody tr {
+  height: 61px;
+  border-bottom: 1px solid #f2eff7;
+}
+
+.employee-table tbody tr:last-child {
+  border-bottom: 0;
+}
+
+.employee-table tbody td {
+  padding: 8px 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.employee-avatar {
+  display: inline-block;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 750;
+  line-height: 34px;
+  text-align: center;
+}
+
+.avatar-violet {
+  color: #6d28d9;
+  background: #ede9fe;
+}
+
+.avatar-peach {
+  color: #c2410c;
+  background: #fff7ed;
+}
+
+.avatar-green {
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.avatar-blue {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.avatar-amber {
+  color: #a16207;
+  background: #fffbeb;
+}
+
+.employee-identity strong,
+.employee-identity small {
+  display: block;
+}
+
+.employee-identity strong {
+  color: var(--text-main);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.employee-identity small {
+  margin-top: 4px;
+  color: #928da9;
+  font-size: 9px;
+}
+
+.department-label {
+  display: inline-block;
+  color: var(--text-main);
+  font-size: 10px;
+}
+
+.department-label i {
+  display: inline-block;
+  width: 19px;
+  margin-right: 5px;
+  color: var(--primary);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.department-label > span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.department-label strong,
+.department-label small {
+  display: block;
+}
+
+.department-label strong {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.department-label small {
+  margin-top: 3px;
+  color: #928da9;
+  font-size: 8px;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 5px 8px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.role-head {
+  color: #6d28d9;
+  background: #f5f3ff;
+}
+
+.role-employee {
+  color: #4b5563;
+  background: #f3f4f6;
+}
+
+.role-hr {
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+
+.employee-action {
+  width: 29px;
+  height: 29px;
+  margin-left: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  color: #827d9b;
+  background: transparent;
+  font-size: 11px;
+}
+
+.employee-action:hover {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.employee-action-delete:hover {
+  color: var(--status-rejected);
+  background: #fef2f2;
+}
+
+.employee-table-footer {
+  margin: 0;
+  min-height: 48px;
+  padding: 7px 19px;
+  border-top: 1px solid #f1eef7;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.employee-table-footer strong {
+  color: var(--text-main);
+  font-weight: 650;
+}
+
+.employee-pagination .page-link {
+  min-width: 30px;
+  height: 30px;
+  padding: 6px 8px;
+  border-color: var(--border);
+  color: var(--text-muted);
+  background: #fff;
+  font-size: 10px;
+  text-align: center;
+  box-shadow: none;
+}
+
+.employee-pagination .page-link:hover {
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.employee-pagination .page-item.active .page-link {
+  z-index: 1;
+  border-color: var(--primary);
+  color: #fff;
+  background: var(--primary);
+}
+
+.employee-pagination .page-item.disabled .page-link {
+  color: #c3bfd0;
+  background: #fcfbfe;
+}
+
+@media (max-width: 575.98px) {
+  .employee-page-header {
+    margin-bottom: 14px;
+  }
+
+  .employee-card-header,
+  .employee-toolbar,
+  .employee-table-footer {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+}

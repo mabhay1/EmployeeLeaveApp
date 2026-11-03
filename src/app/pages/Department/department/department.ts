@@ -3,14 +3,15 @@ import { IDepartmentList } from '../../../core/models/interface/department.model
 import { DepartmentService } from '../../../core/services/department/department-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { IApiResponse } from '../../../core/models/interface/common.model';
-import { DatePipe, DecimalPipe, NgClass, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe, DecimalPipe, NgClass, NgIf } from '@angular/common';
 import { GetInitialsPipe } from '../../../shared/pipes/get-initials-pipe';
 import { NaPipe } from '../../../shared/pipes/na-pipe';
 import { DepartmentModel } from '../../../core/models/class/department.model';
 import { FormsModule, NgForm } from '@angular/forms';
+import { EmployeeService } from '../../../core/services/employee/employee-service';
 
 @Component({
-  imports: [DatePipe,GetInitialsPipe,NaPipe,FormsModule, NgClass, NgIf, DecimalPipe],
+  imports: [DatePipe,GetInitialsPipe,NaPipe,FormsModule, NgClass, NgIf, DecimalPipe, AsyncPipe],
   selector: 'app-department',
   styleUrl: './department.css',
   templateUrl: './department.html',
@@ -22,8 +23,10 @@ export class Department implements OnInit {
   isFormOpen:boolean=false;
 
   departmentSrv = inject(DepartmentService)
+  employeeService = inject(EmployeeService)
 
   departmentObj:DepartmentModel=new DepartmentModel()
+
 
   ngOnInit(): void {
     this.getAllDepartments()

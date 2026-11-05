@@ -129,7 +129,9 @@
             <label class="form-label" for="deptHeadEmpId">Department head</label>
             <select class="form-select department-input" id="deptHeadEmpId" [(ngModel)]="departmentObj.deptHeadEmpId" name="deptHeadEmpId">
               <option value="0">Select a department head</option>
-              <!-- <option value="1024">Priya Mehta · EMP-1024</option> -->
+              @for (item of departmentHeadEmployeesObs$|async; track $index) {
+                <option [value]="item.employeeId">{{item.employeeName}} - {{item.deptName}}</option>
+              }
             </select>
           </div>
 

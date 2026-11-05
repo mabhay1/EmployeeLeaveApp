@@ -2,16 +2,20 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { IDepartmentList } from '../../../core/models/interface/department.model';
 import { DepartmentService } from '../../../core/services/department/department-service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { IApiResponse } from '../../../core/models/interface/common.model';
+import { IApiResponse, ILoginUser } from '../../../core/models/interface/common.model';
 import { AsyncPipe, DatePipe, DecimalPipe, NgClass, NgIf } from '@angular/common';
 import { GetInitialsPipe } from '../../../shared/pipes/get-initials-pipe';
 import { NaPipe } from '../../../shared/pipes/na-pipe';
 import { DepartmentModel } from '../../../core/models/class/department.model';
 import { FormsModule, NgForm } from '@angular/forms';
 import { EmployeeService } from '../../../core/services/employee/employee-service';
+import { map, Observable } from 'rxjs';
+import { IEmployeeList } from '../../../core/models/interface/employee.model';
+import { readLoggedUserData } from '../../../core/helper/common.helper';
+import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 
 @Component({
-  imports: [DatePipe,GetInitialsPipe,NaPipe,FormsModule, NgClass, NgIf, DecimalPipe, AsyncPipe],
+  imports: [DatePipe,GetInitialsPipe,NaPipe,FormsModule, NgClass, NgIf, DecimalPipe,AsyncPipe],
   selector: 'app-department',
   styleUrl: './department.css',
   templateUrl: './department.html',
@@ -27,9 +31,13 @@ export class Department implements OnInit {
 
   departmentObj:DepartmentModel=new DepartmentModel()
 
+  departmentHeadEmployeesObs$:Observable<IEmployeeList[]>=new Observable<IEmployeeList[]>()
 
   ngOnInit(): void {
     this.getAllDepartments()
+    this.departmentHeadEmployeesObs$=this.employeeService.getAllEmployees().pipe(
+      map((res:IApiResponse<IEmployeeList[]>)=>res.data.filter(x=>x.role===GlobalConstant.ROLE.DEPARTMENT_HEAD))
+    )
   }
   openCloseForm(isFormOpen:boolean){
     this.isFormOpen=isFormOpen

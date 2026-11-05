@@ -24,24 +24,19 @@
         <i class="fa-solid fa-building" aria-hidden="true"></i>
         <span class="sidebar-link-label">Departments</span>
       </a>
-      <a class="sidebar-link" title="Leave requests">
+      <a class="sidebar-link" title="Leaves" routerLink="/admin/leaves" routerLinkActive="active">
         <i class="fa-regular fa-calendar-check" aria-hidden="true"></i>
-        <span class="sidebar-link-label">Leave requests</span>
-        <span class="sidebar-count">4</span>
+        <span class="sidebar-link-label">Leaves</span>
       </a>
     </nav>
 
-    <div class="sidebar-section-label sidebar-section-secondary">PERSONAL</div>
+    <!-- <div class="sidebar-section-label sidebar-section-secondary">PERSONAL</div>
     <nav class="sidebar-nav">
-      <a class="sidebar-link"  title="My leave">
-        <i class="fa-regular fa-calendar" aria-hidden="true"></i>
-        <span class="sidebar-link-label">My leave</span>
+      <a class="sidebar-link" title="My Profile" routerLink="/admin/my-profile" routerLinkActive="active">
+        <i class="fa-regular fa-id-card" aria-hidden="true"></i>
+        <span class="sidebar-link-label">My Profile</span>
       </a>
-      <a class="sidebar-link"  title="Settings">
-        <i class="fa-solid fa-gear" aria-hidden="true"></i>
-        <span class="sidebar-link-label">Settings</span>
-      </a>
-    </nav>
+    </nav> -->
 
     <div class="sidebar-bottom">
       <div class="sidebar-user">
@@ -79,7 +74,23 @@
             <span>{{loggedUserData?.employeeName}}</span>
             <small>{{loggedUserData?.role}}</small>
           </div>
-          <i class="fa-solid fa-chevron-down topbar-chevron" aria-hidden="true"></i>
+          <!-- START: Topbar profile dropdown -->
+          <details class="topbar-profile-menu">
+            <summary class="topbar-chevron" aria-label="Open profile menu">
+              <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+            </summary>
+            <div class="topbar-user-dropdown">
+              <a class="topbar-dropdown-item" routerLink="/admin/my-profile">
+                <i class="fa-regular fa-id-card" aria-hidden="true"></i>
+                My Profile
+              </a>
+              <button class="topbar-dropdown-item topbar-dropdown-logout" type="button" (click)="onLogOff()">
+                <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>
+                Log out
+              </button>
+            </div>
+          </details>
+          <!-- END: Topbar profile dropdown -->
         </div>
       </div>
     </header>

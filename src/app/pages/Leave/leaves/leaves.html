@@ -1,0 +1,291 @@
+<section class="leaves-page">
+  <header class="row align-items-center g-3 leaves-page-header">
+    <div class="col">
+      <p class="leaves-eyebrow">TIME OFF</p>
+      <h1>Leave requests</h1>
+      <p class="leaves-subtitle">Apply for time off and keep track of your requests.</p>
+    </div>
+    <div class="col-auto">
+      <button class="btn apply-leave-btn" type="button" (click)="openLeaveModelPopup(true)">
+        <i class="fa-solid fa-plus me-2" aria-hidden="true"></i>
+        Apply for leave
+      </button>
+    </div>
+  </header>
+
+  @if (loggedUserData?.role!==roleConstant.EMPLOYEE) {
+    <nav class="nav nav-tabs leave-view-tabs" aria-label="Leave views">
+      @for (tab of tabs; track $index) {
+        <button class="nav-link" [ngClass]="activeTab.tabName===tab.tabName?'active':''" type="button" aria-current="page" (click)="openTab(tab)">
+          <i [class]="'me-2 '+tab.iconClass" aria-hidden="true"></i>
+          {{tab.tabName}}
+          <span class="badge leave-view-count">3</span>
+        </button>
+      }
+    </nav>
+  }
+
+  @if (activeTab.tabName==='My Leaves') {
+    <section class="my-leaves-section" aria-labelledby="my-leaves-heading">
+      <div class="row align-items-center g-3 section-heading">
+        <div class="col">
+          <div class="row align-items-center g-2">
+            <div class="col-auto">
+              <span class="section-heading-icon"><i class="fa-regular fa-calendar" aria-hidden="true"></i></span>
+            </div>
+            <div class="col">
+              <h2 id="my-leaves-heading">My leave requests</h2>
+              <p>Your submitted requests and their latest status.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-auto">
+          <div class="row g-2">
+            <div class="col-6">
+              <select class="form-select leave-filter-select" aria-label="Filter my leaves by status">
+                <option selected>All statuses</option>
+                @for (item of leaveStatusList; track $index) {
+                  <option>{{item}}</option>
+                }
+              </select>
+            </div>
+            <div class="col-6">
+              <select class="form-select leave-filter-select" aria-label="Filter my leaves by leave type">
+                <option selected>All leave types</option>
+                @for (item of leaveTypeList; track $index) {
+                  <option>{{item}}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        @for (item of myLeaves(); track $index) {
+          <div class="col-12 col-xl-4">
+            <article class="leave-card">
+              <div class="row align-items-center g-2 leave-card-header">
+                <div class="col">
+                  <span class="leave-type">
+                    <i [ngClass]="{
+                      'fa-regular':leaveType.CASUAL_LEAVE.NAME===item.leaveType || leaveType.ANNUAL_LEAVE.NAME===item.leaveType,
+                      'fa-solid':leaveType.SICK_LEAVE.NAME===item.leaveType,
+                      'fa-sun':leaveType.CASUAL_LEAVE.NAME===item.leaveType,
+                      'fa-heart-pulse':leaveType.SICK_LEAVE.NAME===item.leaveType,
+                      'fa-calendar-check':leaveType.ANNUAL_LEAVE.NAME===item.leaveType
+                    }" aria-hidden="true"></i>{{item.leaveType}}</span>
+                </div>
+                <div class="col-auto">
+                  @if (item.isApproved!==null) {
+                    @if (item.isApproved===true) {
+                      <span class="leave-status status-approved"><i></i> Approved</span>
+                    }
+                    @else {
+                      <span class="leave-status status-rejected"><i></i> Rejected</span>
+                    }
+                  }
+                  @else {
+                    <span class="leave-status status-pending"><i></i>Pending</span>
+                  }
+                </div>
+              </div>
+              <div class="leave-card-body">
+                <div class="row g-3">
+                  <div class="col-6">
+                    <span class="leave-detail-label">DATES</span>
+                    <span class="leave-detail-value">{{item.fromDate|date}} – {{item.toDate|date}}</span>
+                  </div>
+                  <div class="col-6">
+                    <span class="leave-detail-label">DURATION</span>
+                    <span class="leave-detail-value">{{item.noOfDays}} days</span>
+                  </div>
+                  <div class="col-12">
+                    <span class="leave-detail-label">REASON</span>
+                    <p class="leave-reason">{{item.details}}</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        }
+      </div>
+    </section>
+  }
+  @else if (activeTab.tabName==='Leave Approvals') {
+    <section class="approval-section" aria-labelledby="approval-heading">
+      <div class="row align-items-center g-3 section-heading">
+        <div class="col">
+          <div class="row align-items-center g-2">
+            <div class="col-auto">
+              <span class="section-heading-icon approval-heading-icon"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i></span>
+            </div>
+            <div class="col">
+              <div class="row align-items-center g-2">
+                <div class="col-auto">
+                  <h2 id="approval-heading">Leave approvals</h2>
+                </div>
+              </div>
+              <p>Review pending leave requests.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-lg-auto">
+          <div class="row g-2 approval-filters" aria-label="Filter team requests by status">
+            <div class="col-6 col-sm-auto">
+              <button class="btn approval-filter active-filter" type="button">
+                All <span>8</span>
+              </button>
+            </div>
+            <div class="col-6 col-sm-auto">
+              <button class="btn approval-filter" type="button">
+                <i class="filter-dot pending-dot"></i> Pending <span>3</span>
+              </button>
+            </div>
+            <div class="col-6 col-sm-auto">
+              <button class="btn approval-filter" type="button">
+                <i class="filter-dot approved-dot"></i> Approved <span>4</span>
+              </button>
+            </div>
+            <div class="col-6 col-sm-auto">
+              <button class="btn approval-filter" type="button">
+                <i class="filter-dot rejected-dot"></i> Rejected <span>1</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        @for (item of allLeavesApproval(); track $index) {
+        <div class="col-12 col-xl-4">
+          <article class="leave-card approval-card">
+            <div class="row align-items-center g-2 leave-card-header">
+              <div class="col">
+                <div class="row align-items-center g-2">
+                  <div class="col-auto">
+                    <span class="employee-avatar employee-avatar-lilac">{{item.employeeName|getInitials}}</span>
+                  </div>
+                  <div class="col">
+                    <h3 class="request-employee-name">{{item.employeeName}}</h3>
+                    <!-- <span class="request-employee-meta">Engineering · Department Head</span> -->
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                  @if (item.isApproved!==null) {
+                    @if (item.isApproved===true) {
+                      <span class="leave-status status-approved"><i></i> Approved</span>
+                    }
+                    @else {
+                      <span class="leave-status status-rejected"><i></i> Rejected</span>
+                    }
+                  }
+                  @else {
+                    <span class="leave-status status-pending"><i></i>Pending</span>
+                  }
+              </div>
+            </div>
+            <div class="leave-card-body">
+              <div class="row g-3">
+                <div class="col-6">
+                  <span class="leave-detail-label">LEAVE TYPE</span>
+                  <span class="leave-detail-value">{{item.leaveType}}</span>
+                </div>
+                <div class="col-6">
+                  <span class="leave-detail-label">DURATION</span>
+                  <span class="leave-detail-value">{{item.noOfDays}} days</span>
+                </div>
+                <div class="col-6">
+                  <span class="leave-detail-label">FROM</span>
+                  <span class="leave-detail-value">{{item.fromDate|date:'dd MMM yyyy'}}</span>
+                </div>
+                <div class="col-6">
+                  <span class="leave-detail-label">TO</span>
+                  <span class="leave-detail-value">{{item.toDate|date:'dd MMM yyyy'}}</span>
+                </div>
+                <div class="col-12">
+                  <span class="leave-detail-label">REASON</span>
+                  <p class="leave-reason">{{item.details}}</p>
+                </div>
+              </div>
+            </div>
+              <footer class="row align-items-center g-2 leave-card-footer">
+                <div class="col"></div>
+                @if (item.isApproved===null) {
+                  <div class="col-auto">
+                    <button class="btn reject-leave-btn" type="button" (click)="rejectLeave(item.leaveId)">
+                      <i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Reject
+                    </button>
+                    <button class="btn approve-leave-btn" type="button" (click)="approveLeave(item.leaveId)">
+                      <i class="fa-solid fa-check me-1" aria-hidden="true"></i> Approve
+                    </button>
+                  </div>
+                }
+              </footer>
+          </article>
+        </div>
+        }
+      </div>
+    </section>
+  }
+
+  <div class="leave-modal-container" #leaveModelPopup>
+    <div class="leave-modal-backdrop" aria-hidden="true"></div>
+    <div class="modal leave-modal" id="applyLeaveModal" tabindex="-1" aria-labelledby="applyLeaveModalLabel"
+      aria-modal="true" role="dialog">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <div>
+              <p class="modal-eyebrow">TIME OFF REQUEST</p>
+              <h2 class="modal-title" id="applyLeaveModalLabel">Apply for leave</h2>
+              <p class="modal-subtitle">Share your leave details for your manager to review.</p>
+            </div>
+            <button type="button" (click)="openLeaveModelPopup(false)" class="btn-close" aria-label="Close"></button>
+          </div>
+          <form>
+            <div class="modal-body">
+              <div class="row g-3">
+                <div class="col-12">
+                  <label class="form-label" for="leaveType">Leave type <span>*</span></label>
+                  <select class="form-select leave-form-control" id="leaveType" [formField]="leaveApplyForm.leaveType">
+                    <option value="" selected disabled>Select leave type</option>
+                    @for (item of leaveTypeList; track $index) {
+                    <option>{{item}}</option>
+                    }
+                  </select>
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label" for="fromDate">From date <span>*</span></label>
+                  <input class="form-control leave-form-control" type="datetime-local" id="fromDate" [formField]="leaveApplyForm.fromDate" />
+                </div>
+                <div class="col-12 col-md-6">
+                  <label class="form-label" for="toDate">To date <span>*</span></label>
+                  <input class="form-control leave-form-control" type="datetime-local" id="toDate" [formField]="leaveApplyForm.toDate" />
+                </div>
+                <!-- <div class="col-12 col-md-6">
+                  <label class="form-label" for="noOfDays">Number of days <span>*</span></label>
+                  <input class="form-control leave-form-control" type="number" id="noOfDays" name="noOfDays" min="1"
+                    step="0.5" placeholder="e.g. 2" required />
+                </div> -->
+                <div class="col-12">
+                  <label class="form-label" for="leaveDetails">Reason / details <span>*</span></label>
+                  <textarea [formField]="leaveApplyForm.details" class="form-control leave-form-control leave-details-input" id="leaveDetails"
+                    rows="3" placeholder="Add a short note for your approver"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn leave-cancel-btn" (click)="onResetForm()">Reset</button>
+              <button type="button" class="btn leave-submit-btn" (click)="onSubmitLeaveRequest()">
+                <i class="fa-solid fa-paper-plane me-2" aria-hidden="true"></i>
+                Submit request
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

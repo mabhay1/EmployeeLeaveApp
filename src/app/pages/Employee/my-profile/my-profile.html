@@ -1,0 +1,131 @@
+<section class="my-profile-page">
+  <header class="row align-items-center g-3 my-profile-header">
+    <div class="col">
+      <p class="profile-eyebrow">PERSONAL</p>
+      <h1>My Profile</h1>
+      <p class="profile-subtitle">View your account details and keep your contact information up to date.</p>
+    </div>
+  </header>
+
+  <div class="row g-4">
+    <div class="col-12">
+      <section class="profile-details-card" aria-labelledby="profile-details-heading">
+        <div class="row align-items-center g-3 profile-card-heading">
+          <div class="col">
+            <span class="profile-card-eyebrow">ACCOUNT DETAILS</span>
+            <h2 id="profile-details-heading">Personal information</h2>
+            <p>Update your personal and work details.</p>
+          </div>
+          <div class="col-auto">
+            <span class="profile-edit-indicator">
+              <i class="fa-regular fa-pen-to-square" aria-hidden="true"></i>
+              Profile details
+            </span>
+          </div>
+        </div>
+
+        <form class="profile-form" [formGroup]="employeeForm">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="profileEmployeeName">Full name</label>
+              <input
+                class="form-control profile-control"
+                type="text"
+                id="profileEmployeeName"
+                name="employeeName"
+                value="Aarav Sharma"
+                formControlName="employeeName"
+              />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="profileEmail">Work email</label>
+              <input
+                class="form-control profile-control"
+                type="email"
+                id="profileEmail"
+                name="emailId"
+                value="aarav.sharma@company.com"
+                formControlName="emailId"
+                readonly
+              />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="profileContact">Contact number</label>
+              <input
+                class="form-control profile-control"
+                type="tel"
+                id="profileContact"
+                name="contactNo"
+                value="9000000401"
+                autocomplete="tel"
+                formControlName="contactNo"
+              />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="profileGender">Gender</label>
+              <select formControlName="gender" class="form-select profile-control" id="profileGender" name="gender">
+                @for (item of genderList; track $index) {
+                  <option>{{item}}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="profileDepartment">Department</label>
+              <select formControlName="deptId" class="form-select profile-control" id="profileDepartment">
+                @for (item of departmentList(); track $index) {
+                  <option [value]="item.deptId">{{item.deptName}}</option>
+                }
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="profileRole">Role</label>
+              <input
+                class="form-control profile-control"
+                formControlName="role"
+                type="text"
+                id="profileRole"
+                readonly
+              />
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label" for="profilePassword">Password</label>
+              <input
+                class="form-control profile-control"
+                type="password"
+                id="profilePassword"
+                placeholder="Enter password"
+                autocomplete="new-password"
+                formControlName="password"
+              />
+            </div>
+          </div>
+
+          <div class="row align-items-center g-2 profile-form-footer">
+            <div class="col">
+              <p><i class="fa-solid fa-circle-info" aria-hidden="true"></i> Update your profile information below.</p>
+            </div>
+            <div class="col-auto">
+              <div class="row g-2">
+                <!-- <div class="col-auto">
+                  <button class="btn profile-cancel-btn" type="button">Cancel</button>
+                </div> -->
+                <div class="col-auto">
+                  <button class="btn profile-save-btn" type="button" (click)="updateProfile()">
+                    <i class="fa-regular fa-floppy-disk me-2" aria-hidden="true"></i>
+                    Save changes
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+    </div>
+  </div>
+</section>

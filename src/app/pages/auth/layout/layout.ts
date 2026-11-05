@@ -5,6 +5,7 @@ import { ILoginUser } from '../../../core/models/interface/common.model';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 import { GetInitialsPipe } from '../../../shared/pipes/get-initials-pipe';
 import { readLoggedUserData } from '../../../core/helper/common.helper';
+import { MenuConstant } from '../../../core/constants/menuConstant';
 
 @Component({
   imports: [RouterOutlet,RouterLink, RouterLinkActive, NgClass,GetInitialsPipe],
@@ -17,9 +18,11 @@ export class Layout {
   isSidebarCollapsed:boolean=false
   loggedUserData?:ILoginUser
   router=inject(Router)
+  allowedMenuList:any[]=[]
 
   constructor(){
     this.loggedUserData=readLoggedUserData()
+    this.allowedMenuList=MenuConstant.filter(menu=>menu.SHOW_IN_SIDEBAR && menu.ALLOWED_ROLES.includes(this.loggedUserData?.role||''))
   }
 
   toggleSideBar(){

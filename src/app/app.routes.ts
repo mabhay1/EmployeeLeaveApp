@@ -8,6 +8,8 @@ import { EmployeeList } from './pages/Employee/employee-list/employee-list';
 import { NewEmployee } from './pages/Employee/new-employee/new-employee';
 import { Leaves } from './pages/Leave/leaves/leaves';
 import { MyProfile } from './pages/Employee/my-profile/my-profile';
+import { NoAccess } from './pages/no-access/no-access';
+import { roleBasedAccessGuard } from './core/guards/role-based-access-guard';
 
 export const routes: Routes = [
     {
@@ -26,27 +28,37 @@ export const routes: Routes = [
         children:[
             {
                 path:'dashboard',
+                canActivate:[roleBasedAccessGuard],
                 component: Dashboard
             },
             {
                 path: 'my-profile',
+                canActivate:[roleBasedAccessGuard],
                 component: MyProfile
             },
             {
                 path:'department',
+                canActivate:[roleBasedAccessGuard],
                 component:Department
             },
             {
                 path: 'employees',
+                canActivate:[roleBasedAccessGuard],
                 component: EmployeeList
             },
             {
                 path: 'new-employee/:employeeId',
+                canActivate:[roleBasedAccessGuard],
                 component: NewEmployee
             },
             {
                 path: 'leaves',
+                canActivate:[roleBasedAccessGuard],
                 component: Leaves
+            },
+            {
+                path: 'no-access',
+                component: NoAccess
             }
         ]
     }

@@ -4,12 +4,13 @@ import { UserService } from '../../../core/services/user/user-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { finalize, map } from 'rxjs';
-import { NgIf } from '@angular/common';
+import { NgIf, NgTemplateOutlet } from '@angular/common';
+import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
 
 @Component({
-  imports: [FormsModule, NgIf],
+  imports: [FormsModule, NgIf, GetValidationMessagePipe, NgTemplateOutlet],
   selector: 'app-login',
   styleUrl: './login.css',
   templateUrl: './login.html',
@@ -20,30 +21,35 @@ export class Login {
 
   router = inject(Router)
   loading=signal<boolean>(false)
+  emailPattern=GlobalConstant.PATTERN.EMAIL
+  isLoginButtonClicked:boolean=false
 
   constructor(private userSrv:UserService){
 
   }
-  onLoginUser(){
-    this.loading.set(true)
-    this.userSrv.loginUser(this.loginObj).pipe(
-      finalize(()=>{
-        this.loading.set(false)
+  onLoginUser(form:NgForm){
+    this.isLoginButtonClicked=true
+    if(form.valid){
+      this.loading.set(true)
+      this.userSrv.loginUser(this.loginObj).pipe(
+        finalize(()=>{
+          this.loading.set(false)
+        })
+      ).subscribe({
+        next:(res)=>{
+          if(res.result){
+            alert("Logged In Success")
+            localStorage.setItem(GlobalConstant.LOCAL_LOGIN_KEY,JSON.stringify(res.data))
+            this.router.navigateByUrl('/admin/dashboard')
+          }
+          else{
+            alert(res.message)
+          }
+        },
+        error:(err:HttpErrorResponse)=>{
+          alert("API Error")
+        }
       })
-    ).subscribe({
-      next:(res)=>{
-        if(res.result){
-          alert("Logged In Success")
-          localStorage.setItem(GlobalConstant.LOCAL_LOGIN_KEY,JSON.stringify(res.data))
-          this.router.navigateByUrl('/admin/dashboard')
-        }
-        else{
-          alert(res.message)
-        }
-      },
-      error:(err:HttpErrorResponse)=>{
-        alert("API Error")
-      }
-    })
+    }
   }
 }

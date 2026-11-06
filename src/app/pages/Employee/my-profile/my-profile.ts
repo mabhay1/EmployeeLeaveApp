@@ -4,15 +4,16 @@ import { readLoggedUserData } from '../../../core/helper/common.helper';
 import { EmployeeService } from '../../../core/services/employee/employee-service';
 import { IEmployeeList } from '../../../core/models/interface/employee.model';
 import { HttpErrorResponse } from '@angular/common/http';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 import { DepartmentService } from '../../../core/services/department/department-service';
 import { map, Observable } from 'rxjs';
 import { IDepartmentList } from '../../../core/models/interface/department.model';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
+import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, GetValidationMessagePipe, NgTemplateOutlet],
   selector: 'app-my-profile',
   styleUrl: './my-profile.css',
   templateUrl: './my-profile.html',
@@ -29,6 +30,8 @@ export class MyProfile implements OnInit{
   genderList=GlobalConstant.GENDER_LIST
 
   departmentList=signal<IDepartmentList[]>([])
+
+  isFormSubmitBtnClicked = false
 
   constructor(){
     this.loggedUserData=readLoggedUserData()
@@ -50,13 +53,13 @@ export class MyProfile implements OnInit{
   initializeForm(){
     this.employeeForm=new FormGroup({
       employeeId: new FormControl(0),
-      employeeName: new FormControl(''),
-      deptId: new FormControl(''),
-      contactNo: new FormControl(''),
-      emailId: new FormControl(''),
-      role: new FormControl(''),
-      password: new FormControl(''),
-      gender: new FormControl('')
+      employeeName: new FormControl('',[Validators.required,Validators.minLength(3)]),
+      deptId: new FormControl('',[Validators.required]),
+      contactNo: new FormControl('',[Validators.required,Validators.minLength(10),Validators.maxLength(10)]),
+      emailId: new FormControl('',[Validators.required,Validators.pattern(GlobalConstant.PATTERN.EMAIL)]),
+      role: new FormControl('',[Validators.required]),
+      password: new FormControl('',[Validators.required]),
+      gender: new FormControl('',[Validators.required])
     })
   }
 
@@ -72,19 +75,22 @@ export class MyProfile implements OnInit{
   }
 
   updateProfile(){
-    const formValue=this.employeeForm.getRawValue()
-    this.employeeSrv.updateEmployee(formValue).subscribe({
-      next:(res:IApiResponse<IEmployeeList>)=>{
-        if(res.result){
-          alert("Profile updated Success")
+    this.isFormSubmitBtnClicked=true
+    if(this.employeeForm.valid){
+      const formValue=this.employeeForm.getRawValue()
+      this.employeeSrv.updateEmployee(formValue).subscribe({
+        next:(res:IApiResponse<IEmployeeList>)=>{
+          if(res.result){
+            alert("Profile updated Success")
+          }
+          else{
+            alert(res.message)
+          }
+        },
+        error:(err:HttpErrorResponse)=>{
+          alert("API Error")
         }
-        else{
-          alert(res.message)
-        }
-      },
-      error:(err:HttpErrorResponse)=>{
-        alert("API Error")
-      }
-    })
+      })
+    }
   }
 }

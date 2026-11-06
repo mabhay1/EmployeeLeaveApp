@@ -118,11 +118,15 @@
               class="form-control department-input"
               type="text"
               id="deptName"
+              #departmentName="ngModel"
               [(ngModel)]="departmentObj.deptName"
               name="deptName"
               placeholder="e.g. Marketing"
               required
             />
+            @if(departmentName.touched||departmentName.dirty||isFormButtonClicked){
+              <p class="text-danger">{{departmentName.errors|getValidationMessage}}</p>
+            }
           </div>
           @if (departmentObj.deptId!==0) {
             <div class="mb-3">

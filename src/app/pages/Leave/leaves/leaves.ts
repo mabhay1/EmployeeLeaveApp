@@ -1,4 +1,4 @@
-import { DatePipe, NgClass, NgIf } from '@angular/common';
+import { DatePipe, NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ILeaveList } from '../../../core/models/interface/leave.model';
 import { IApiResponse, ILoginUser } from '../../../core/models/interface/common.model';
@@ -8,10 +8,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 import { GetInitialsPipe } from '../../../shared/pipes/get-initials-pipe';
 import { LeaveModel } from '../../../core/models/class/leave.model';
-import { form, FormField } from '@angular/forms/signals';
+import { form, FormField, minLength, required, schema } from '@angular/forms/signals';
+import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
 
 @Component({
-  imports: [NgClass, DatePipe, GetInitialsPipe, FormField,NgIf],
+  imports: [NgClass, DatePipe, GetInitialsPipe, FormField, NgIf, GetValidationMessagePipe, NgTemplateOutlet],
   selector: 'app-leaves',
   styleUrl: './leaves.css',
   templateUrl: './leaves.html',
@@ -43,7 +44,14 @@ export class Leaves implements OnInit,AfterViewInit {
   @ViewChild('leaveModelPopup') leaveModelPopup!:ElementRef
 
   leaveApplySignalObj=signal<LeaveModel>(new LeaveModel())
-  leaveApplyForm=form(this.leaveApplySignalObj)
+  leaveApplyForm=form(this.leaveApplySignalObj,(schema)=>{
+    required(schema.fromDate),
+    required(schema.toDate),
+    required(schema.leaveType),
+    required(schema.details),
+    minLength(schema.details,5)
+  })
+  isLeaveRequestButtonClicked:boolean=false
 
   constructor(){
     this.loggedUserData=readLoggedUserData()
@@ -82,27 +90,30 @@ export class Leaves implements OnInit,AfterViewInit {
     const leaveObj=new LeaveModel()
     leaveObj.employeeId=this.loggedUserData?.employeeId||0
     this.leaveApplySignalObj.set(leaveObj)
+    this.isLeaveRequestButtonClicked=false
   }
 
   onSubmitLeaveRequest(){
-    const formValue=this.leaveApplyForm().value()
-    debugger
-    formValue.noOfDays=Math.floor((new Date(formValue.toDate).getTime()-new Date(formValue.fromDate).getTime())/(1000*3600*24))
-    this.leaveSrv.addLeave(formValue).subscribe({
-      next:(res:IApiResponse<ILeaveList>)=>{
-        if(res.result){
-          alert(res.message)
-          this.getMyLeaves()
-          this.openLeaveModelPopup(false)
+    this.isLeaveRequestButtonClicked=true
+    if(this.leaveApplyForm().valid()){
+      const formValue=this.leaveApplyForm().value()
+      formValue.noOfDays=Math.floor((new Date(formValue.toDate).getTime()-new Date(formValue.fromDate).getTime())/(1000*3600*24))
+      this.leaveSrv.addLeave(formValue).subscribe({
+        next:(res:IApiResponse<ILeaveList>)=>{
+          if(res.result){
+            alert(res.message)
+            this.getMyLeaves()
+            this.openLeaveModelPopup(false)
+          }
+          else{
+            alert(res.message)
+          }
+        },
+        error:(err:HttpErrorResponse)=>{
+          alert("API Error")
         }
-        else{
-          alert(res.message)
-        }
-      },
-      error:(err:HttpErrorResponse)=>{
-        alert("API Error")
-      }
-    })
+      })
+    }
   }
 
   getMyLeaves(){

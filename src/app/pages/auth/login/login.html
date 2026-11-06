@@ -55,7 +55,7 @@
         <p class="login-subtitle">Enter your work details to continue to your employee, HR, or department head workspace.</p>
       </div>
 
-      <form class="login-form">
+      <form class="login-form" #form="ngForm">
         <div class="mb-4">
           <label for="emailId" class="form-label">Work email</label>
           <div class="input-wrap">
@@ -64,13 +64,16 @@
               class="form-control login-input"
               type="email"
               id="emailId"
+              #loginEmail="ngModel"
               [(ngModel)]="loginObj.emailId"
               name="emailId"
               placeholder="you@company.com"
               autocomplete="username"
               required
+              [pattern]="emailPattern"
             />
           </div>
+          <ng-container *ngTemplateOutlet="validationError; context:{formControl:loginEmail}"></ng-container>
         </div>
 
         <div class="password-group">
@@ -84,6 +87,7 @@
               class="form-control login-input"
               type="password"
               id="password"
+              #loginPassword="ngModel"
               [(ngModel)]="loginObj.password"
               name="password"
               placeholder="Enter your password"
@@ -92,9 +96,10 @@
             />
             <i class="fa-regular fa-eye password-visibility" aria-hidden="true"></i>
           </div>
+          <ng-container *ngTemplateOutlet="validationError; context:{formControl:loginPassword}"></ng-container>
         </div>
 
-        <button [disabled]="loading()" class="btn login-submit" type="button" (click)="onLoginUser()">
+        <button [disabled]="loading()" class="btn login-submit" type="button" (click)="onLoginUser(form)">
           <span>Sign in</span>
           <span *ngIf="loading()" class="login-spinner" aria-hidden="true"></span>
         </button>
@@ -114,3 +119,9 @@
     </footer>
   </section>
 </main>
+
+<ng-template #validationError let-formControl="formControl">
+    @if(formControl.touched||formControl.dirty||isLoginButtonClicked){
+      <p class="text-danger">{{formControl.errors|getValidationMessage}}</p>
+    }
+</ng-template>

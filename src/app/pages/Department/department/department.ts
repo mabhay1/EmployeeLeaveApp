@@ -13,9 +13,10 @@ import { map, Observable } from 'rxjs';
 import { IEmployeeList } from '../../../core/models/interface/employee.model';
 import { readLoggedUserData } from '../../../core/helper/common.helper';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
+import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
 
 @Component({
-  imports: [DatePipe,GetInitialsPipe,NaPipe,FormsModule, NgClass, NgIf, DecimalPipe,AsyncPipe],
+  imports: [DatePipe,GetInitialsPipe,NaPipe,FormsModule, NgClass, NgIf, DecimalPipe,AsyncPipe, GetValidationMessagePipe],
   selector: 'app-department',
   styleUrl: './department.css',
   templateUrl: './department.html',
@@ -32,6 +33,8 @@ export class Department implements OnInit {
   departmentObj:DepartmentModel=new DepartmentModel()
 
   departmentHeadEmployeesObs$:Observable<IEmployeeList[]>=new Observable<IEmployeeList[]>()
+
+  isFormButtonClicked:boolean=false
 
   ngOnInit(): void {
     this.getAllDepartments()
@@ -80,41 +83,48 @@ export class Department implements OnInit {
   onReset(form:NgForm){
     form.reset()
     this.departmentObj=new DepartmentModel()
+    this.isFormButtonClicked=false
   }
   onCreateDepartment(form:NgForm){
-    this.departmentSrv.createDepartment(this.departmentObj).subscribe({
-      next:(res:IApiResponse<IDepartmentList>)=>{
-        if(res.result){
-          alert("Department Created Successfully")
-          this.getAllDepartments()
-          this.onReset(form)
-          this.openCloseForm(false)
+    this.isFormButtonClicked=true
+    if(form.valid){
+      this.departmentSrv.createDepartment(this.departmentObj).subscribe({
+        next:(res:IApiResponse<IDepartmentList>)=>{
+          if(res.result){
+            alert("Department Created Successfully")
+            this.getAllDepartments()
+            this.onReset(form)
+            this.openCloseForm(false)
+          }
+          else{
+            alert(res.message)
+          }
+        },error:(err:HttpErrorResponse)=>{
+          alert("API Error")
         }
-        else{
-          alert(res.message)
-        }
-      },error:(err:HttpErrorResponse)=>{
-        alert("API Error")
-      }
-    })
+      })
+    }
   }
 
-  onUpdateDepartment(form:NgForm){
-    this.departmentSrv.updateDepartment(this.departmentObj).subscribe({
-      next:(res:IApiResponse<IDepartmentList>)=>{
-        if(res.result){
-          alert("Department Updated Successfully")
-          this.getAllDepartments()
-          this.onReset(form)
-          this.openCloseForm(false)
+  onUpdateDepartment(form: NgForm) {
+    this.isFormButtonClicked=true
+    if (form.valid) {
+      this.departmentSrv.updateDepartment(this.departmentObj).subscribe({
+        next: (res: IApiResponse<IDepartmentList>) => {
+          if (res.result) {
+            alert("Department Updated Successfully")
+            this.getAllDepartments()
+            this.onReset(form)
+            this.openCloseForm(false)
+          }
+          else {
+            alert(res.message)
+          }
+        }, error: (err: HttpErrorResponse) => {
+          alert("API Error")
         }
-        else{
-          alert(res.message)
-        }
-      },error:(err:HttpErrorResponse)=>{
-        alert("API Error")
-      }
-    })
+      })
+    }
   }
 
 }

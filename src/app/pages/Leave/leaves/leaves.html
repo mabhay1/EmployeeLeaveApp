@@ -246,24 +246,23 @@
                     <option>{{item}}</option>
                     }
                   </select>
+                  <ng-container *ngTemplateOutlet="validationError; context:{formControl:leaveApplyForm.leaveType()}"></ng-container>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="fromDate">From date <span>*</span></label>
                   <input class="form-control leave-form-control" type="datetime-local" id="fromDate" [formField]="leaveApplyForm.fromDate" />
+                  <ng-container *ngTemplateOutlet="validationError; context:{formControl:leaveApplyForm.fromDate()}"></ng-container>
                 </div>
                 <div class="col-12 col-md-6">
                   <label class="form-label" for="toDate">To date <span>*</span></label>
                   <input class="form-control leave-form-control" type="datetime-local" id="toDate" [formField]="leaveApplyForm.toDate" />
+                  <ng-container *ngTemplateOutlet="validationError; context:{formControl:leaveApplyForm.toDate()}"></ng-container>
                 </div>
-                <!-- <div class="col-12 col-md-6">
-                  <label class="form-label" for="noOfDays">Number of days <span>*</span></label>
-                  <input class="form-control leave-form-control" type="number" id="noOfDays" name="noOfDays" min="1"
-                    step="0.5" placeholder="e.g. 2" required />
-                </div> -->
                 <div class="col-12">
                   <label class="form-label" for="leaveDetails">Reason / details <span>*</span></label>
                   <textarea [formField]="leaveApplyForm.details" class="form-control leave-form-control leave-details-input" id="leaveDetails"
                     rows="3" placeholder="Add a short note for your approver"></textarea>
+                  <ng-container *ngTemplateOutlet="validationError; context:{formControl:leaveApplyForm.details()}"></ng-container>  
                 </div>
               </div>
             </div>
@@ -280,3 +279,9 @@
     </div>
   </div>
 </section>
+
+<ng-template #validationError let-formControl="formControl">
+  @if(formControl.touched()||isLeaveRequestButtonClicked){
+    <p class="text-danger">{{formControl.errors()|getValidationMessage}}</p>
+  }
+</ng-template>

@@ -1,3 +1,5 @@
+import { PATTERN, REQUIRED } from "@angular/forms/signals";
+
 export const GlobalConstant = {
     API_METHODS:{
         LOGIN_USER:'Login',
@@ -61,6 +63,13 @@ export const GlobalConstant = {
         APPROVED:'Approved',
         PENDING:'Pending',
         REJECTED:'Rejected'
+    },
+    PATTERN:{
+        EMAIL:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    },
+    VALIDATION_MESSAGE:{
+        REQUIRED:'This is Required',
+        EMAIL: 'Provide Proper Email'
     }
 
 }

@@ -41,6 +41,7 @@
                 autocomplete="name"
                 required
               />
+              <ng-container *ngTemplateOutlet="validationMessage; context:{formControl:employeeForm.controls['employeeName']}"/>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="contactNo">Contact number <span>*</span></label>
@@ -54,6 +55,7 @@
                 autocomplete="tel"
                 required
               />
+              <ng-container *ngTemplateOutlet="validationMessage; context:{formControl:employeeForm.controls['contactNo']}"/>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="emailId">Email address <span>*</span></label>
@@ -67,6 +69,7 @@
                 autocomplete="email"
                 required
               />
+              <ng-container *ngTemplateOutlet="validationMessage; context:{formControl:employeeForm.controls['emailId']}"/>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="password">Temporary password <span>*</span></label>
@@ -78,8 +81,8 @@
                 name="password"
                 placeholder="Enter a temporary password"
                 autocomplete="new-password"
-                required
               />
+              <ng-container *ngTemplateOutlet="validationMessage; context:{formControl:employeeForm.controls['password']}"/>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="deptId">Department <span>*</span></label>
@@ -89,6 +92,7 @@
                   <option [value]="department.deptId">{{department.deptName}}</option>
                 }
               </select>
+              <ng-container *ngTemplateOutlet="validationMessage; context:{formControl:employeeForm.controls['deptId']}"/>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="role">Role <span>*</span></label>
@@ -98,6 +102,7 @@
                   <option>{{item}}</option>
                 }
               </select>
+              <ng-container *ngTemplateOutlet="validationMessage; context:{formControl:employeeForm.controls['role']}"/>
             </div>
             <div class="col-12 col-md-6">
               <label class="form-label" for="gender">Gender <span>*</span></label>
@@ -107,6 +112,7 @@
                   <option>{{item}}</option>
                 }
               </select>
+              <ng-container *ngTemplateOutlet="validationMessage; context:{formControl:employeeForm.controls['gender']}"/>
             </div>
           </div>
 
@@ -144,3 +150,9 @@
     </div>
   </div>
 </section>
+
+<ng-template #validationMessage let-formControl="formControl">
+  @if(formControl.touched||formControl.dirty||isFormSubmitBtnClicked){
+    <p class="text-danger">{{formControl.errors|getValidationMessage}}</p>
+  }
+</ng-template>

@@ -390,6 +390,21 @@
   transform: translateY(-1px);
 }
 
+.login-spinner {
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: login-spinner-rotate 700ms linear infinite;
+}
+
+@keyframes login-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .secure-note {
   display: flex;
   align-items: center;

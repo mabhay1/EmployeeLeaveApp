@@ -36,7 +36,7 @@ export class Department implements OnInit {
   ngOnInit(): void {
     this.getAllDepartments()
     this.departmentHeadEmployeesObs$=this.employeeService.getAllEmployees().pipe(
-      map((res:IApiResponse<IEmployeeList[]>)=>res.data.filter(x=>x.role===GlobalConstant.ROLE.DEPARTMENT_HEAD))
+      map((res:IApiResponse<IEmployeeList[]>)=>res.data.filter(x=>x.role===GlobalConstant.ROLE.DEPARTMENT_HEAD && x.deptId===this.departmentObj.deptId))
     )
   }
   openCloseForm(isFormOpen:boolean){

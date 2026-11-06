@@ -5,11 +5,15 @@ import { EmployeeService } from '../../../core/services/employee/employee-servic
 import { IApiResponse } from '../../../core/models/interface/common.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GetInitialsPipe } from '../../../shared/pipes/get-initials-pipe';
-import { NgClass } from '@angular/common';
+import { AsyncPipe, NgClass } from '@angular/common';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
+import { FormsModule } from '@angular/forms';
+import { DepartmentService } from '../../../core/services/department/department-service';
+import { map, Observable } from 'rxjs';
+import { IDepartmentList } from '../../../core/models/interface/department.model';
 
 @Component({
-  imports: [RouterLink, GetInitialsPipe, NgClass],
+  imports: [RouterLink, GetInitialsPipe, NgClass, FormsModule, AsyncPipe],
   selector: 'app-employee-list',
   styleUrl: './employee-list.css',
   templateUrl: './employee-list.html',
@@ -17,21 +21,42 @@ import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 export class EmployeeList implements OnInit{
 
   employees=signal<IEmployeeList[]>([])
+  filteredEmployees=signal<IEmployeeList[]>([])
 
   employeeSrv=inject(EmployeeService)
+  departmentSrv=inject(DepartmentService)
   router = inject(Router)
 
   globalConstantValue=GlobalConstant
 
+  departmentListObs$=new Observable<IDepartmentList[]>()
+
+  selectedDepartmemt:string=''
+  selectedRole:string=''
+
+  constructor(){
+    this.departmentListObs$=this.departmentSrv.getAllDepartments().pipe(
+      map(res=>res.data)
+    )
+  }
 
   ngOnInit(): void {
     this.getAllEmployees()
+  }
+
+  onFilterEmployees(){
+    const filterEmployees=this.employees().filter(x=>{
+      return (this.selectedDepartmemt===''||x.deptName===this.selectedDepartmemt) && (this.selectedRole===''||x.role===this.selectedRole)
+    })
+    this.filteredEmployees.set(filterEmployees)
+    console.log(this.filteredEmployees())
   }
 
   getAllEmployees(){
     this.employeeSrv.getAllEmployees().subscribe({
       next:(res:IApiResponse<IEmployeeList[]>)=>{
         this.employees.set(res.data)
+        this.filteredEmployees.set(res.data)
       },
       error:(err:HttpErrorResponse)=>{
 

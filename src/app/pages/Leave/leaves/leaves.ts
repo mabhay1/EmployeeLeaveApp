@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common';
+import { DatePipe, NgClass, NgIf } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
 import { ILeaveList } from '../../../core/models/interface/leave.model';
 import { IApiResponse, ILoginUser } from '../../../core/models/interface/common.model';
@@ -11,7 +11,7 @@ import { LeaveModel } from '../../../core/models/class/leave.model';
 import { form, FormField } from '@angular/forms/signals';
 
 @Component({
-  imports: [NgClass, DatePipe, GetInitialsPipe, FormField],
+  imports: [NgClass, DatePipe, GetInitialsPipe, FormField,NgIf],
   selector: 'app-leaves',
   styleUrl: './leaves.css',
   templateUrl: './leaves.html',
@@ -23,8 +23,10 @@ export class Leaves implements OnInit,AfterViewInit {
   ]
   activeTab:any=this.tabs[0]
   loggedUserData?:ILoginUser
+
   myLeaves=signal<ILeaveList[]>([])
   allLeavesApproval=signal<ILeaveList[]>([])
+  filteredLeavesApproval=signal<ILeaveList[]>([])
 
   leaveSrv=inject(LeaveService)
 
@@ -34,6 +36,9 @@ export class Leaves implements OnInit,AfterViewInit {
 
   leaveTypeList=Object.values(this.leaveType).map(x=>x.NAME)
   leaveStatusList=Object.values(this.leaveStatus)
+
+  filtersList=['All',...this.leaveStatusList]
+  selectedFilter=this.filtersList[0]
 
   @ViewChild('leaveModelPopup') leaveModelPopup!:ElementRef
 
@@ -81,7 +86,8 @@ export class Leaves implements OnInit,AfterViewInit {
 
   onSubmitLeaveRequest(){
     const formValue=this.leaveApplyForm().value()
-    formValue.noOfDays=(new Date(formValue.toDate).getTime()-new Date(formValue.fromDate).getTime())/(1000*3600*24)
+    debugger
+    formValue.noOfDays=Math.floor((new Date(formValue.toDate).getTime()-new Date(formValue.fromDate).getTime())/(1000*3600*24))
     this.leaveSrv.addLeave(formValue).subscribe({
       next:(res:IApiResponse<ILeaveList>)=>{
         if(res.result){
@@ -113,6 +119,8 @@ export class Leaves implements OnInit,AfterViewInit {
     this.leaveSrv.getAllLeaves().subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.allLeavesApproval.set(res.data)
+        this.filteredLeavesApproval.set(res.data)
+        this.onSelectFilter(this.selectedFilter)
       },
       error:(err:HttpErrorResponse)=>{
 
@@ -123,11 +131,32 @@ export class Leaves implements OnInit,AfterViewInit {
     this.loggedUserData && this.leaveSrv.getLeavesApprovalBySupervisorId(this.loggedUserData?.employeeId).subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.allLeavesApproval.set(res.data)
+        this.filteredLeavesApproval.set(res.data)
+        this.onSelectFilter(this.selectedFilter)
       },
       error:(err:HttpErrorResponse)=>{
 
       }
     })
+  }
+
+  onSelectFilter(filterValue:string){
+    this.selectedFilter=filterValue
+    const filteredLeaves = this.allLeavesApproval().filter(leave=>{
+      if(this.selectedFilter===this.leaveStatus.PENDING){
+        return leave.isApproved===null
+      }
+      else if(this.selectedFilter===this.leaveStatus.APPROVED){
+        return leave.isApproved===true
+      }
+      else if(this.selectedFilter===this.leaveStatus.REJECTED){
+        return leave.isApproved===false
+      }
+      else{
+        return true
+      }
+    })
+    this.filteredLeavesApproval.set(filteredLeaves)
   }
 
   approveLeave(id:number){

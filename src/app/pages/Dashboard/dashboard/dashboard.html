@@ -1,1 +1,358 @@
-<p>dashboard works!</p>
+<section class="dashboard-page">
+
+  <section class="dashboard-welcome" aria-labelledby="dashboard-welcome-heading">
+    <div class="row align-items-center g-3">
+      <div class="col">
+        <p class="welcome-eyebrow">WELCOME</p>
+        <h2 id="dashboard-welcome-heading">Your leave workspace</h2>
+        <p>Check request status or apply for time off.</p>
+      </div>
+      <div class="col-12 col-sm-auto">
+        <button class="btn dashboard-primary-action" type="button" routerLink="/admin/leaves">
+          <i class="fa-solid fa-plus me-2" aria-hidden="true"></i>
+          Apply for leave
+        </button>
+      </div>
+    </div>
+    <span class="welcome-decoration welcome-decoration-one" aria-hidden="true"></span>
+    <span class="welcome-decoration welcome-decoration-two" aria-hidden="true"></span>
+  </section>
+
+  <!-- Shared personal view for Employee, HR, and Department Head. -->
+  <section class="dashboard-personal-view" aria-labelledby="personal-dashboard-heading">
+    <div class="row align-items-end g-2 dashboard-section-heading">
+      <div class="col">
+        <p class="dashboard-section-kicker">MY OVERVIEW</p>
+        <h2 id="personal-dashboard-heading">My leave requests</h2>
+      </div>
+      <div class="col-auto">
+        <a class="dashboard-text-link" routerLink="/admin/leaves">View all my leaves <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i></a>
+      </div>
+    </div>
+
+    <div class="row g-3 dashboard-stat-grid">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <article class="dashboard-stat-card">
+          <span class="dashboard-stat-icon stat-icon-violet"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i></span>
+          <p class="dashboard-stat-label">Total requests</p>
+          <div class="dashboard-stat-value">{{myTotalLeaves()}} <span>requests</span></div>
+          <small class="dashboard-stat-footnote">All requests submitted by you</small>
+        </article>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <article class="dashboard-stat-card">
+          <span class="dashboard-stat-icon stat-icon-amber"><i class="fa-regular fa-clock" aria-hidden="true"></i></span>
+          <p class="dashboard-stat-label">Pending</p>
+          <div class="dashboard-stat-value">{{myPendingLeaves()}} <span>request</span></div>
+          <small class="dashboard-stat-footnote">Waiting for a decision</small>
+        </article>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <article class="dashboard-stat-card">
+          <span class="dashboard-stat-icon stat-icon-green"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+          <p class="dashboard-stat-label">Approved</p>
+          <div class="dashboard-stat-value">{{myApprovedLeaves()}} <span>requests</span></div>
+          <small class="dashboard-stat-footnote">Approved leave requests</small>
+        </article>
+      </div>
+      <div class="col-12 col-sm-6 col-xl-3">
+        <article class="dashboard-stat-card">
+          <span class="dashboard-stat-icon stat-icon-blue"><i class="fa-solid fa-xmark" aria-hidden="true"></i></span>
+          <p class="dashboard-stat-label">Rejected</p>
+          <div class="dashboard-stat-value">{{myRejectedLeaves()}} <span>request</span></div>
+          <small class="dashboard-stat-footnote">Requests not approved</small>
+        </article>
+      </div>
+    </div>
+
+    <article class="dashboard-card dashboard-table-card">
+      <div class="row align-items-center g-2 dashboard-card-heading">
+        <div class="col">
+          <h3>Recent requests</h3>
+          <p>Leave type, dates, duration, reason, and current status</p>
+        </div>
+        <div class="col-auto">
+          <a class="dashboard-text-link" routerLink="/admin/leaves">See all <i class="fa-solid fa-arrow-right ms-1" aria-hidden="true"></i></a>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table dashboard-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th scope="col">LEAVE TYPE</th>
+              <th scope="col">FROM</th>
+              <th scope="col">TO</th>
+              <th scope="col">DURATION</th>
+              <th scope="col">REASON</th>
+              <th scope="col">STATUS</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of myLeaves().slice(0,3); track $index) {
+            <tr>
+                <td>
+                    <span class="table-leave-type">
+                        <i [ngClass]="{
+                        'fa-regular':constantData.LEAVE_TYPE.CASUAL_LEAVE.NAME===item.leaveType || constantData.LEAVE_TYPE.ANNUAL_LEAVE.NAME===item.leaveType,
+                        'fa-solid':constantData.LEAVE_TYPE.SICK_LEAVE.NAME===item.leaveType,
+                        'fa-sun':constantData.LEAVE_TYPE.CASUAL_LEAVE.NAME===item.leaveType,
+                        'fa-heart-pulse':constantData.LEAVE_TYPE.SICK_LEAVE.NAME===item.leaveType,
+                        'fa-calendar-check':constantData.LEAVE_TYPE.ANNUAL_LEAVE.NAME===item.leaveType
+                        }" aria-hidden="true"></i>{{item.leaveType}}
+                    </span>
+                </td>
+              <td>{{item.fromDate|date}}</td>
+              <td>{{item.toDate|date}}</td>
+              <td>{{item.noOfDays}} days</td>
+              <td>{{item.details}}</td>
+              <td>
+                @if (item.isApproved!==null) {
+                    @if (item.isApproved===true) {
+                      <span class="dashboard-status status-approved"><i></i> Approved</span>
+                    }
+                    @else {
+                      <span class="dashboard-status status-rejected"><i></i> Rejected</span>
+                    }
+                  }
+                  @else {
+                    <span class="dashboard-status status-pending"><i></i>Pending</span>
+                  }
+              </td>
+            </tr> 
+            }
+          </tbody>
+        </table>
+      </div>
+    </article>
+  </section>
+
+   @if (loggedUserData?.role===constantData.ROLE.HR) {
+    <section class="dashboard-role-view dashboard-hr-view" aria-labelledby="hr-dashboard-heading">
+        <div class="row align-items-end g-2 dashboard-section-heading">
+        <div class="col">
+            <!-- <p class="dashboard-section-kicker">HR</p> -->
+            <h2 id="hr-dashboard-heading">Organization overview</h2>
+        </div>
+        <div class="col-auto">
+            <span class="dashboard-section-note">Employees, departments, and all leave requests</span>
+        </div>
+        </div>
+
+        <div class="row g-3 dashboard-stat-grid">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-violet"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">Employees</p>
+            <div class="dashboard-stat-value">{{(employeesObs$|async)?.length}} <span>people</span></div>
+            <small class="dashboard-stat-footnote">Employee directory</small>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-blue"><i class="fa-solid fa-building" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">Departments</p>
+            <div class="dashboard-stat-value">{{(departmentListObs$|async)?.length}}  <span>departments</span></div>
+            <small class="dashboard-stat-footnote">Department list</small>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-green"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">All leave requests</p>
+            <div class="dashboard-stat-value">{{TotalLeaveRequests()}} <span>requests</span></div>
+            <small class="dashboard-stat-footnote">Across the organization</small>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-amber"><i class="fa-regular fa-hourglass-half" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">Pending decisions</p>
+            <div class="dashboard-stat-value">{{TotalPendingRequests()}} <span>requests</span></div>
+            <small class="dashboard-stat-footnote">Awaiting review</small>
+            </article>
+        </div>
+        </div>
+
+        <div class="row g-3 dashboard-content-row">
+        <div class="col-12 col-lg-6">
+            <article class="dashboard-card dashboard-quick-links">
+            <div class="dashboard-card-heading">
+                <h3>People and departments</h3>
+                <p>Use your existing employee and department management features</p>
+            </div>
+            <div class="row g-2">
+                <div class="col-12 col-sm-6">
+                <button class="dashboard-shortcut-card" type="button">
+                    <span class="dashboard-stat-icon stat-icon-violet"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
+                    <span><strong>Employee records</strong><small>View, add, update, or remove employees</small></span>
+                    <i class="fa-solid fa-arrow-right shortcut-arrow" aria-hidden="true"></i>
+                </button>
+                </div>
+                <div class="col-12 col-sm-6">
+                <button class="dashboard-shortcut-card" type="button">
+                    <span class="dashboard-stat-icon stat-icon-blue"><i class="fa-solid fa-building" aria-hidden="true"></i></span>
+                    <span><strong>Department records</strong><small>View, add, update, or remove departments</small></span>
+                    <i class="fa-solid fa-arrow-right shortcut-arrow" aria-hidden="true"></i>
+                </button>
+                </div>
+            </div>
+            </article>
+        </div>
+        <div class="col-12 col-lg-6">
+            <article class="dashboard-card dashboard-status-card">
+            <div class="dashboard-card-heading">
+                <h3>Leave request status</h3>
+                <p>Request totals can be grouped by approval status</p>
+            </div>
+            <div class="request-status-list">
+                <div><span class="dashboard-status status-pending">Pending</span><strong>{{TotalPendingRequests()}}</strong></div>
+                <div><span class="dashboard-status status-approved">Approved</span><strong>{{TotalApprovedRequests()}}</strong></div>
+                <div><span class="dashboard-status status-rejected">Rejected</span><strong>{{TotalRejectedRequests()}}</strong></div>
+            </div>
+            </article>
+        </div>
+        </div>
+
+        <article class="dashboard-card dashboard-table-card">
+        <div class="row align-items-center g-2 dashboard-card-heading">
+            <div class="col">
+            <h3>All leave requests</h3>
+            <p>Review requests returned by the all-leaves list</p>
+            </div>
+            <!-- <div class="col-auto"><span class="pending-count-badge">12 pending</span></div> -->
+        </div>
+        <div class="table-responsive">
+            <table class="table dashboard-table align-middle mb-0">
+            <thead>
+                <tr>
+                <th scope="col">EMPLOYEE</th><th scope="col">LEAVE TYPE</th>
+                <th scope="col">FROM</th><th scope="col">TO</th><th scope="col">DURATION</th>
+                <th scope="col">REASON</th><th scope="col">STATUS</th><th scope="col" class="text-end">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (item of allLeavesApproval().slice(0,3); track $index) {
+                <tr>
+                <td><span class="dashboard-employee-identity"><span class="dashboard-avatar avatar-lilac">{{item.employeeName|getInitials}}</span><span><strong>{{item.employeeName}}</strong></span></span></td>
+                <td>{{item.leaveType}}</td><td>{{item.fromDate|date}}</td><td>{{item.toDate|date}}</td><td>{{item.noOfDays}} days</td><td>{{item.details}}</td>
+                <td>
+                @if (item.isApproved!==null) {
+                    @if (item.isApproved===true) {
+                      <span class="dashboard-status status-approved"><i></i> Approved</span>
+                    }
+                    @else {
+                      <span class="dashboard-status status-rejected"><i></i> Rejected</span>
+                    }
+                  }
+                  @else {
+                    <span class="dashboard-status status-pending"><i></i>Pending</span>
+                  }
+                </td>
+                <td class="text-end"><button class="dashboard-review-button" type="button">Review</button></td>
+                </tr> 
+                }
+            </tbody>
+            </table>
+        </div>
+        </article>
+    </section>
+    }
+    @if (loggedUserData?.role===constantData.ROLE.DEPARTMENT_HEAD) {
+    <section class="dashboard-role-view dashboard-head-view" aria-labelledby="head-dashboard-heading">
+        <div class="row align-items-end g-2 dashboard-section-heading">
+        <div class="col">
+            @for (department of departmentListObs$|async; track $index) {
+              @if (department.deptId===loggedUserData?.deptId) {
+                <p class="dashboard-section-kicker">DEPARTMENT - {{department.deptName}}</p>
+              }
+            }
+            <h2 id="head-dashboard-heading">Department leave requests</h2>
+        </div>
+        <div class="col-auto">
+            <span class="dashboard-section-note">Requests returned for your approval</span>
+        </div>
+        </div>
+
+        <div class="row g-3 dashboard-stat-grid">
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-violet"><i class="fa-regular fa-calendar-check" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">Department requests</p>
+            <div class="dashboard-stat-value">{{TotalLeaveRequests()}} <span>requests</span></div>
+            <small class="dashboard-stat-footnote">Requests in your approval list</small>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-amber"><i class="fa-regular fa-hourglass-half" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">Pending</p>
+            <div class="dashboard-stat-value">{{TotalPendingRequests()}} <span>requests</span></div>
+            <small class="dashboard-stat-footnote">Need your decision</small>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-green"><i class="fa-solid fa-check" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">Approved</p>
+            <div class="dashboard-stat-value">{{TotalApprovedRequests()}} <span>requests</span></div>
+            <small class="dashboard-stat-footnote">Approved in your department</small>
+            </article>
+        </div>
+        <div class="col-12 col-sm-6 col-xl-3">
+            <article class="dashboard-stat-card">
+            <span class="dashboard-stat-icon stat-icon-blue"><i class="fa-solid fa-xmark" aria-hidden="true"></i></span>
+            <p class="dashboard-stat-label">Rejected</p>
+            <div class="dashboard-stat-value">{{TotalRejectedRequests()}} <span>requests</span></div>
+            <small class="dashboard-stat-footnote">Rejected in your department</small>
+            </article>
+        </div>
+        </div>
+
+        <article class="dashboard-card dashboard-table-card">
+        <div class="row align-items-center g-2 dashboard-card-heading">
+            <div class="col">
+            <h3>Requests awaiting your review</h3>
+            <p>Employee, leave details, and approval status from your department</p>
+            </div>
+            <div class="col-auto"><span class="pending-count-badge">{{TotalPendingRequests()}} pending</span></div>
+        </div>
+        <div class="table-responsive">
+            <table class="table dashboard-table align-middle mb-0">
+            <thead>
+                <tr>
+                <th scope="col">EMPLOYEE</th><th scope="col">LEAVE TYPE</th><th scope="col">FROM</th>
+                <th scope="col">TO</th><th scope="col">DURATION</th><th scope="col">REASON</th>
+                <th scope="col">STATUS</th><th scope="col" class="text-end">DECISION</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (item of PendingRequests(); track $index) {
+                <tr>
+                <td><span class="dashboard-employee-identity"><span class="dashboard-avatar avatar-lilac">{{item.employeeName|getInitials}}</span><span><strong>{{item.employeeName}}</strong></span></span></td>
+                <td>{{item.leaveType}}</td><td>{{item.fromDate|date}}</td><td>{{item.toDate|date}}</td><td>{{item.noOfDays}} days</td><td>{{item.details}}</td>
+                <td>
+                @if (item.isApproved!==null) {
+                    @if (item.isApproved===true) {
+                      <span class="dashboard-status status-approved"><i></i> Approved</span>
+                    }
+                    @else {
+                      <span class="dashboard-status status-rejected"><i></i> Rejected</span>
+                    }
+                  }
+                  @else {
+                    <span class="dashboard-status status-pending"><i></i>Pending</span>
+                  }
+                </td>
+                <td class="text-end">
+                    <button class="dashboard-decision-button decision-reject" type="button">Reject</button>
+                    <button class="dashboard-decision-button decision-approve" type="button">Approve</button>
+                </td>
+                </tr>
+                }
+            </tbody>
+            </table>
+        </div>
+        </article>
+    </section>
+    }
+</section>

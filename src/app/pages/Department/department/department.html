@@ -124,16 +124,17 @@
               required
             />
           </div>
-
-          <div class="mb-3">
-            <label class="form-label" for="deptHeadEmpId">Department head</label>
-            <select class="form-select department-input" id="deptHeadEmpId" [(ngModel)]="departmentObj.deptHeadEmpId" name="deptHeadEmpId">
-              <option value="0">Select a department head</option>
-              @for (item of departmentHeadEmployeesObs$|async; track $index) {
-                <option [value]="item.employeeId">{{item.employeeName}} - {{item.deptName}}</option>
-              }
-            </select>
-          </div>
+          @if (departmentObj.deptId!==0) {
+            <div class="mb-3">
+              <label class="form-label" for="deptHeadEmpId">Department head</label>
+              <select class="form-select department-input" id="deptHeadEmpId" [(ngModel)]="departmentObj.deptHeadEmpId" name="deptHeadEmpId">
+                <option value="null">Select a department head</option>
+                @for (item of departmentHeadEmployeesObs$|async; track $index) {
+                  <option [value]="item.employeeId">{{item.employeeName}} - {{item.deptName}}</option>
+                }
+              </select>
+            </div>
+          }
 
           <div class="row align-items-center g-2">
             <div class="col-auto">

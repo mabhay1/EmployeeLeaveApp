@@ -94,8 +94,9 @@
           </div>
         </div>
 
-        <button class="btn login-submit" type="button" (click)="onLoginUser()">
-          Sign in <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+        <button [disabled]="loading()" class="btn login-submit" type="button" (click)="onLoginUser()">
+          <span>Sign in</span>
+          <span *ngIf="loading()" class="login-spinner" aria-hidden="true"></span>
         </button>
       </form>
 

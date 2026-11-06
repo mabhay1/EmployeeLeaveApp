@@ -34,15 +34,15 @@
       <div class="col-12 col-md-auto">
         <div class="row g-2">
           <div class="col-6">
-            <select class="form-select employee-filter" aria-label="Filter by department">
-              <option selected>All departments</option>
-              <option>Engineering</option>
-              <option>Marketing</option>
-              <option>Finance</option>
+            <select (change)="onFilterEmployees()" [(ngModel)]="selectedDepartmemt" class="form-select employee-filter" aria-label="Filter by department">
+              <option value="" selected>All departments</option>
+              @for (item of departmentListObs$|async; track $index) {
+                <option>{{item.deptName}}</option>
+              }
             </select>
           </div>
           <div class="col-6">
-            <select class="form-select employee-filter" aria-label="Filter by role">
+            <select (change)="onFilterEmployees()" [(ngModel)]="selectedRole" class="form-select employee-filter" aria-label="Filter by role">
               <option value="">All roles</option>
               @for (role of globalConstantValue.ROLE_LIST; track $index) {
                 <option>{{role}}</option>
@@ -65,7 +65,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (employee of employees(); track $index) {
+          @for (employee of filteredEmployees(); track $index) {
             <tr>
               <td>
                 <div class="employee-identity d-flex align-items-center gap-2">

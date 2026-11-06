@@ -29,36 +29,57 @@ export const routes: Routes = [
             {
                 path:'dashboard',
                 canActivate:[roleBasedAccessGuard],
-                component: Dashboard
+                component: Dashboard,
+                data:{
+                    title:'Dashboard'
+                }
             },
             {
                 path: 'my-profile',
                 canActivate:[roleBasedAccessGuard],
-                component: MyProfile
+                component: MyProfile,
+                data:{
+                    title:'My Profile'
+                }
             },
             {
                 path:'department',
                 canActivate:[roleBasedAccessGuard],
-                component:Department
+                component:Department,
+                data:{
+                    title:'Department'
+                }
             },
             {
                 path: 'employees',
                 canActivate:[roleBasedAccessGuard],
-                component: EmployeeList
+                component: EmployeeList,
+                data:{
+                    title:'Employees'
+                }
             },
             {
                 path: 'new-employee/:employeeId',
                 canActivate:[roleBasedAccessGuard],
-                component: NewEmployee
+                component: NewEmployee,
+                data:{
+                    title:'New/Update Employee'
+                }
             },
             {
                 path: 'leaves',
                 canActivate:[roleBasedAccessGuard],
-                component: Leaves
+                component: Leaves,
+                data:{
+                    title:'Leaves'
+                }
             },
             {
                 path: 'no-access',
-                component: NoAccess
+                component: NoAccess,
+                data:{
+                    title:'No Access'
+                }
             }
         ]
     }

@@ -19,7 +19,7 @@
         <button class="nav-link" [ngClass]="activeTab.tabName===tab.tabName?'active':''" type="button" aria-current="page" (click)="openTab(tab)">
           <i [class]="'me-2 '+tab.iconClass" aria-hidden="true"></i>
           {{tab.tabName}}
-          <span class="badge leave-view-count">3</span>
+          <!-- <span class="badge leave-view-count">3</span> -->
         </button>
       }
     </nav>
@@ -39,7 +39,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12 col-md-auto">
+        <!-- <div class="col-12 col-md-auto">
           <div class="row g-2">
             <div class="col-6">
               <select class="form-select leave-filter-select" aria-label="Filter my leaves by status">
@@ -58,7 +58,7 @@
               </select>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <div class="row g-3">
@@ -132,32 +132,23 @@
         </div>
         <div class="col-12 col-lg-auto">
           <div class="row g-2 approval-filters" aria-label="Filter team requests by status">
-            <div class="col-6 col-sm-auto">
-              <button class="btn approval-filter active-filter" type="button">
-                All <span>8</span>
-              </button>
-            </div>
-            <div class="col-6 col-sm-auto">
-              <button class="btn approval-filter" type="button">
-                <i class="filter-dot pending-dot"></i> Pending <span>3</span>
-              </button>
-            </div>
-            <div class="col-6 col-sm-auto">
-              <button class="btn approval-filter" type="button">
-                <i class="filter-dot approved-dot"></i> Approved <span>4</span>
-              </button>
-            </div>
-            <div class="col-6 col-sm-auto">
-              <button class="btn approval-filter" type="button">
-                <i class="filter-dot rejected-dot"></i> Rejected <span>1</span>
-              </button>
-            </div>
+            @for (item of filtersList; track $index) {
+              <div class="col-6 col-sm-auto">
+                <button class="btn approval-filter" [ngClass]="selectedFilter===item?'active-filter':''" type="button" (click)="onSelectFilter(item)">
+                  <i *ngIf="item!=='All'" class="filter-dot" [ngClass]="{
+                    'pending-dot':item == leaveStatus.PENDING,
+                    'approved-dot':item == leaveStatus.APPROVED,
+                    'rejected-dot':item == leaveStatus.REJECTED
+                  }"></i> {{item}}
+                </button>
+              </div>
+            }
           </div>
         </div>
       </div>
 
       <div class="row g-3">
-        @for (item of allLeavesApproval(); track $index) {
+        @for (item of filteredLeavesApproval(); track $index) {
         <div class="col-12 col-xl-4">
           <article class="leave-card approval-card">
             <div class="row align-items-center g-2 leave-card-header">

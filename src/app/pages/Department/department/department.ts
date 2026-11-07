@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { IDepartmentList } from '../../../core/models/interface/department.model';
 import { DepartmentService } from '../../../core/services/department/department-service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -9,7 +9,7 @@ import { NaPipe } from '../../../shared/pipes/na-pipe';
 import { DepartmentModel } from '../../../core/models/class/department.model';
 import { FormsModule, NgForm } from '@angular/forms';
 import { EmployeeService } from '../../../core/services/employee/employee-service';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { IEmployeeList } from '../../../core/models/interface/employee.model';
 import { readLoggedUserData } from '../../../core/helper/common.helper';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
@@ -21,7 +21,7 @@ import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-m
   styleUrl: './department.css',
   templateUrl: './department.html',
 })
-export class Department implements OnInit {
+export class Department implements OnInit, OnDestroy {
 
   departmentList=signal<IDepartmentList[]>([])
 
@@ -36,6 +36,8 @@ export class Department implements OnInit {
 
   isFormButtonClicked:boolean=false
 
+  subscriptionArray:Subscription[] = []
+
   ngOnInit(): void {
     this.getAllDepartments()
     this.departmentHeadEmployeesObs$=this.employeeService.getAllEmployees().pipe(
@@ -47,7 +49,7 @@ export class Department implements OnInit {
   }
 
   getAllDepartments(){
-    this.departmentSrv.getAllDepartments().subscribe({
+    const subs = this.departmentSrv.getAllDepartments().subscribe({
       next:(res:IApiResponse<IDepartmentList[]>)=>{
         this.departmentList.set(res.data)
       },
@@ -55,6 +57,7 @@ export class Department implements OnInit {
 
       }
     })
+    this.subscriptionArray.push(subs)
   }
   onEdit(obj:IDepartmentList){
     const stringObj=JSON.stringify(obj)
@@ -64,7 +67,7 @@ export class Department implements OnInit {
   onDelete(id:number){
     const isConfirm = confirm("Are you sure want to Delete!!")
     if(isConfirm){
-      this.departmentSrv.deleteDepartmentById(id).subscribe({
+      const subs = this.departmentSrv.deleteDepartmentById(id).subscribe({
         next:(res)=>{
           if(res.result){
             alert("Department Deleted Successfully")
@@ -78,6 +81,7 @@ export class Department implements OnInit {
           alert("API Error")
         }
       })
+      this.subscriptionArray.push(subs)
     }
   }
   onReset(form:NgForm){
@@ -88,7 +92,7 @@ export class Department implements OnInit {
   onCreateDepartment(form:NgForm){
     this.isFormButtonClicked=true
     if(form.valid){
-      this.departmentSrv.createDepartment(this.departmentObj).subscribe({
+      const subs = this.departmentSrv.createDepartment(this.departmentObj).subscribe({
         next:(res:IApiResponse<IDepartmentList>)=>{
           if(res.result){
             alert("Department Created Successfully")
@@ -103,13 +107,14 @@ export class Department implements OnInit {
           alert("API Error")
         }
       })
+      this.subscriptionArray.push(subs)
     }
   }
 
   onUpdateDepartment(form: NgForm) {
     this.isFormButtonClicked=true
     if (form.valid) {
-      this.departmentSrv.updateDepartment(this.departmentObj).subscribe({
+      const subs = this.departmentSrv.updateDepartment(this.departmentObj).subscribe({
         next: (res: IApiResponse<IDepartmentList>) => {
           if (res.result) {
             alert("Department Updated Successfully")
@@ -124,7 +129,13 @@ export class Department implements OnInit {
           alert("API Error")
         }
       })
+      this.subscriptionArray.push(subs)
     }
   }
 
+  ngOnDestroy(): void {
+    this.subscriptionArray.forEach(subs=>{
+      subs.unsubscribe()
+    })
+  }
 }

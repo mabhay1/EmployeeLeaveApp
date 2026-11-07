@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { IApiResponse, ILoginUser } from '../../../core/models/interface/common.model';
 import { readLoggedUserData } from '../../../core/helper/common.helper';
 import { EmployeeService } from '../../../core/services/employee/employee-service';
@@ -11,6 +11,7 @@ import { map, Observable } from 'rxjs';
 import { IDepartmentList } from '../../../core/models/interface/department.model';
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
 import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   imports: [ReactiveFormsModule, GetValidationMessagePipe, NgTemplateOutlet],
@@ -24,6 +25,7 @@ export class MyProfile implements OnInit{
 
   employeeSrv=inject(EmployeeService)
   departmentSrv=inject(DepartmentService)
+  destroyRef = inject(DestroyRef)
 
   employeeForm!:FormGroup
 
@@ -40,7 +42,9 @@ export class MyProfile implements OnInit{
   ngOnInit(): void {
     this.getEmployeeById()
     this.employeeForm.controls['deptId'].disable()
-    this.departmentSrv.getAllDepartments().subscribe({
+    this.departmentSrv.getAllDepartments().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next:(res:IApiResponse<IDepartmentList[]>)=>{
         this.departmentList.set(res.data)
       },
@@ -64,7 +68,9 @@ export class MyProfile implements OnInit{
   }
 
   getEmployeeById(){
-    this.employeeSrv.getEmployeeById(this.loggedUserData?.employeeId||0).subscribe({
+    this.employeeSrv.getEmployeeById(this.loggedUserData?.employeeId||0).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next:(res:IApiResponse<IEmployeeList>)=>{
         this.employeeForm.patchValue(res.data)
       },
@@ -78,7 +84,9 @@ export class MyProfile implements OnInit{
     this.isFormSubmitBtnClicked=true
     if(this.employeeForm.valid){
       const formValue=this.employeeForm.getRawValue()
-      this.employeeSrv.updateEmployee(formValue).subscribe({
+      this.employeeSrv.updateEmployee(formValue).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe({
         next:(res:IApiResponse<IEmployeeList>)=>{
           if(res.result){
             alert("Profile updated Success")

@@ -1,5 +1,5 @@
 import { AsyncPipe, NgTemplateOutlet } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map, Observable } from 'rxjs';
@@ -11,6 +11,7 @@ import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 import { IEmployeeList, IEmployeeModel } from '../../../core/models/interface/employee.model';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   imports: [RouterLink, ReactiveFormsModule, AsyncPipe, GetValidationMessagePipe, NgTemplateOutlet],
@@ -33,6 +34,8 @@ export class NewEmployee implements OnInit {
 
   currentEmployeeId:number = 0
   isFormSubmitBtnClicked:boolean=false
+
+  destroyRef=inject(DestroyRef)
 
   constructor(private fb:FormBuilder){
     this.initializeForm()
@@ -66,7 +69,9 @@ export class NewEmployee implements OnInit {
   }
 
   getEmployeeById(){
-    this.employeeSrv.getEmployeeById(this.currentEmployeeId).subscribe({
+    this.employeeSrv.getEmployeeById(this.currentEmployeeId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next:(res:IApiResponse<IEmployeeList>)=>{
         this.employeeForm.patchValue(res.data)
       },
@@ -85,7 +90,9 @@ export class NewEmployee implements OnInit {
     this.isFormSubmitBtnClicked=true
     const formValue = this.employeeForm.value as IEmployeeModel
     if(this.employeeForm.valid){
-      this.employeeSrv.createEmployee(formValue).subscribe({
+      this.employeeSrv.createEmployee(formValue).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe({
         next:(res:IApiResponse<IEmployeeList>)=>{
           if(res.result){
             alert("Employee created success")
@@ -106,7 +113,9 @@ export class NewEmployee implements OnInit {
     this.isFormSubmitBtnClicked=true
     const formValue = this.employeeForm.value as IEmployeeModel
     if(this.employeeForm.valid){
-      this.employeeSrv.updateEmployee(formValue).subscribe({
+      this.employeeSrv.updateEmployee(formValue).pipe(
+        takeUntilDestroyed(this.destroyRef)
+      ).subscribe({
         next:(res:IApiResponse<IEmployeeList>)=>{
           if(res.result){
             alert("Employee updated success")

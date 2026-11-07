@@ -1,11 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { LoginModel } from '../../../core/models/class/user.model';
 import { UserService } from '../../../core/services/user/user-service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 import { Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
-import { finalize, map } from 'rxjs';
+import { finalize, map, Subscription } from 'rxjs';
 import { NgIf, NgTemplateOutlet } from '@angular/common';
 import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
 
@@ -15,7 +15,7 @@ import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-m
   styleUrl: './login.css',
   templateUrl: './login.html',
 })
-export class Login {
+export class Login implements OnDestroy {
 
   loginObj:LoginModel = new LoginModel()
 
@@ -23,6 +23,7 @@ export class Login {
   loading=signal<boolean>(false)
   emailPattern=GlobalConstant.PATTERN.EMAIL
   isLoginButtonClicked:boolean=false
+  subscription!:Subscription
 
   constructor(private userSrv:UserService){
 
@@ -31,7 +32,7 @@ export class Login {
     this.isLoginButtonClicked=true
     if(form.valid){
       this.loading.set(true)
-      this.userSrv.loginUser(this.loginObj).pipe(
+      const subs = this.userSrv.loginUser(this.loginObj).pipe(
         finalize(()=>{
           this.loading.set(false)
         })
@@ -51,5 +52,9 @@ export class Login {
         }
       })
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe()
   }
 }

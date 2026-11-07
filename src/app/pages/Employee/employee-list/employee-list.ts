@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IEmployeeList } from '../../../core/models/interface/employee.model';
 import { EmployeeService } from '../../../core/services/employee/employee-service';
@@ -9,7 +9,7 @@ import { AsyncPipe, NgClass } from '@angular/common';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
 import { FormsModule } from '@angular/forms';
 import { DepartmentService } from '../../../core/services/department/department-service';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subject, takeUntil } from 'rxjs';
 import { IDepartmentList } from '../../../core/models/interface/department.model';
 
 @Component({
@@ -18,7 +18,7 @@ import { IDepartmentList } from '../../../core/models/interface/department.model
   styleUrl: './employee-list.css',
   templateUrl: './employee-list.html',
 })
-export class EmployeeList implements OnInit{
+export class EmployeeList implements OnInit, OnDestroy{
 
   employees=signal<IEmployeeList[]>([])
   filteredEmployees=signal<IEmployeeList[]>([])
@@ -33,6 +33,8 @@ export class EmployeeList implements OnInit{
 
   selectedDepartmemt:string=''
   selectedRole:string=''
+
+  takeUntilSubs$:Subject<void>=new Subject<void>()
 
   constructor(){
     this.departmentListObs$=this.departmentSrv.getAllDepartments().pipe(
@@ -53,7 +55,9 @@ export class EmployeeList implements OnInit{
   }
 
   getAllEmployees(){
-    this.employeeSrv.getAllEmployees().subscribe({
+    this.employeeSrv.getAllEmployees().pipe(
+      takeUntil(this.takeUntilSubs$)
+    ).subscribe({
       next:(res:IApiResponse<IEmployeeList[]>)=>{
         this.employees.set(res.data)
         this.filteredEmployees.set(res.data)
@@ -69,7 +73,9 @@ export class EmployeeList implements OnInit{
   onDelete(id:number){
     const isConfirm = confirm("Are you sure want to delete!!")
     if(isConfirm){
-      this.employeeSrv.deleteEmployee(id).subscribe({
+      this.employeeSrv.deleteEmployee(id).pipe(
+        takeUntil(this.takeUntilSubs$)
+      ).subscribe({
         next:(res:IApiResponse)=>{
           if(res.result){
             alert("Employee Deleted Success")
@@ -84,5 +90,8 @@ export class EmployeeList implements OnInit{
         }
       })
     }
+  }
+  ngOnDestroy(): void {
+    this.takeUntilSubs$.next()
   }
 }

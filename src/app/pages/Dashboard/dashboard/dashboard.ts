@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { readLoggedUserData } from '../../../core/helper/common.helper';
 import { IApiResponse, ILoginUser } from '../../../core/models/interface/common.model';
 import { GlobalConstant } from '../../../core/constants/GlobalConstant';
@@ -8,11 +8,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AsyncPipe, DatePipe, NgClass } from '@angular/common';
 import { EmployeeService } from '../../../core/services/employee/employee-service';
 import { DepartmentService } from '../../../core/services/department/department-service';
-import { map, Observable } from 'rxjs';
+import { map, Observable, Subscription } from 'rxjs';
 import { IEmployeeList } from '../../../core/models/interface/employee.model';
 import { IDepartmentList } from '../../../core/models/interface/department.model';
 import { GetInitialsPipe } from '../../../shared/pipes/get-initials-pipe';
 import { RouterLink } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   imports: [NgClass,DatePipe,AsyncPipe, GetInitialsPipe, RouterLink],
@@ -45,6 +46,8 @@ export class Dashboard implements OnInit {
   employeeSrv=inject(EmployeeService)
   deparrtmentSrv=inject(DepartmentService)
 
+  destroyRef=inject(DestroyRef)
+
   constructor(){
     this.employeesObs$=this.employeeSrv.getAllEmployees().pipe(
       map(res=>res.data)
@@ -65,7 +68,9 @@ export class Dashboard implements OnInit {
   }
 
   getMyLeaves(){
-    this.loggedUserData && this.leaveSrv.getAllLeavesByEmployeeId(this.loggedUserData?.employeeId).subscribe({
+    this.loggedUserData && this.leaveSrv.getAllLeavesByEmployeeId(this.loggedUserData?.employeeId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.myLeaves.set(res.data.sort((a,b)=>new Date(b.fromDate).getTime()-new Date(a.fromDate).getTime()))
       },
@@ -75,7 +80,9 @@ export class Dashboard implements OnInit {
     })
   }
   getAllLeaves(){
-    this.leaveSrv.getAllLeaves().subscribe({
+    this.leaveSrv.getAllLeaves().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.allLeavesApproval.set(res.data.sort((a,b)=>new Date(b.fromDate).getTime()-new Date(a.fromDate).getTime()))
       },
@@ -85,7 +92,9 @@ export class Dashboard implements OnInit {
     })
   }
   getSpecificDepartmentEmployeeLeaves() {
-    this.loggedUserData && this.leaveSrv.getLeavesApprovalBySupervisorId(this.loggedUserData?.employeeId).subscribe({
+    this.loggedUserData && this.leaveSrv.getLeavesApprovalBySupervisorId(this.loggedUserData?.employeeId).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.allLeavesApproval.set(res.data)
       },

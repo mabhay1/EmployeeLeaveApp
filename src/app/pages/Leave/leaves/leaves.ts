@@ -1,5 +1,5 @@
 import { DatePipe, NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
-import { AfterViewInit, Component, ElementRef, inject, OnInit, signal, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from '@angular/core';
 import { ILeaveList } from '../../../core/models/interface/leave.model';
 import { IApiResponse, ILoginUser } from '../../../core/models/interface/common.model';
 import { readLoggedUserData } from '../../../core/helper/common.helper';
@@ -10,6 +10,7 @@ import { GetInitialsPipe } from '../../../shared/pipes/get-initials-pipe';
 import { LeaveModel } from '../../../core/models/class/leave.model';
 import { form, FormField, minLength, required, schema } from '@angular/forms/signals';
 import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-message-pipe';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   imports: [NgClass, DatePipe, GetInitialsPipe, FormField, NgIf, GetValidationMessagePipe, NgTemplateOutlet],
@@ -17,7 +18,7 @@ import { GetValidationMessagePipe } from '../../../shared/pipes/get-validation-m
   styleUrl: './leaves.css',
   templateUrl: './leaves.html',
 })
-export class Leaves implements OnInit,AfterViewInit {
+export class Leaves implements OnInit,AfterViewInit, OnDestroy {
   tabs:any[]=[
     {tabName:'My Leaves', iconClass:'fa-regular fa-calendar'},
     {tabName:'Leave Approvals', iconClass:'fa-solid fa-clipboard-check'}
@@ -52,6 +53,8 @@ export class Leaves implements OnInit,AfterViewInit {
     minLength(schema.details,5)
   })
   isLeaveRequestButtonClicked:boolean=false
+
+  takeUntilSubj$:Subject<void>=new Subject<void>()
 
   constructor(){
     this.loggedUserData=readLoggedUserData()
@@ -98,7 +101,9 @@ export class Leaves implements OnInit,AfterViewInit {
     if(this.leaveApplyForm().valid()){
       const formValue=this.leaveApplyForm().value()
       formValue.noOfDays=Math.floor((new Date(formValue.toDate).getTime()-new Date(formValue.fromDate).getTime())/(1000*3600*24))
-      this.leaveSrv.addLeave(formValue).subscribe({
+      this.leaveSrv.addLeave(formValue).pipe(
+        takeUntil(this.takeUntilSubj$)
+      ).subscribe({
         next:(res:IApiResponse<ILeaveList>)=>{
           if(res.result){
             alert(res.message)
@@ -117,7 +122,9 @@ export class Leaves implements OnInit,AfterViewInit {
   }
 
   getMyLeaves(){
-    this.loggedUserData && this.leaveSrv.getAllLeavesByEmployeeId(this.loggedUserData?.employeeId).subscribe({
+    this.loggedUserData && this.leaveSrv.getAllLeavesByEmployeeId(this.loggedUserData?.employeeId).pipe(
+      takeUntil(this.takeUntilSubj$)
+    ).subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.myLeaves.set(res.data)
       },
@@ -127,7 +134,9 @@ export class Leaves implements OnInit,AfterViewInit {
     })
   }
   getAllLeaves(){
-    this.leaveSrv.getAllLeaves().subscribe({
+    this.leaveSrv.getAllLeaves().pipe(
+      takeUntil(this.takeUntilSubj$)
+    ).subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.allLeavesApproval.set(res.data)
         this.filteredLeavesApproval.set(res.data)
@@ -139,7 +148,9 @@ export class Leaves implements OnInit,AfterViewInit {
     })
   }
   getSpecificDepartmentEmployeeLeaves() {
-    this.loggedUserData && this.leaveSrv.getLeavesApprovalBySupervisorId(this.loggedUserData?.employeeId).subscribe({
+    this.loggedUserData && this.leaveSrv.getLeavesApprovalBySupervisorId(this.loggedUserData?.employeeId).pipe(
+      takeUntil(this.takeUntilSubj$)
+    ).subscribe({
       next:(res:IApiResponse<ILeaveList[]>)=>{
         this.allLeavesApproval.set(res.data)
         this.filteredLeavesApproval.set(res.data)
@@ -171,7 +182,9 @@ export class Leaves implements OnInit,AfterViewInit {
   }
 
   approveLeave(id:number){
-    this.leaveSrv.approveLeave(id).subscribe({
+    this.leaveSrv.approveLeave(id).pipe(
+      takeUntil(this.takeUntilSubj$)
+    ).subscribe({
       next:(res:IApiResponse)=>{
         if(res.result){
           alert(res.message)
@@ -193,7 +206,9 @@ export class Leaves implements OnInit,AfterViewInit {
   }
 
   rejectLeave(id:number){
-    this.leaveSrv.rejectLeave(id).subscribe({
+    this.leaveSrv.rejectLeave(id).pipe(
+      takeUntil(this.takeUntilSubj$)
+    ).subscribe({
       next:(res:IApiResponse)=>{
         if(res.result){
           alert(res.message)
@@ -212,5 +227,9 @@ export class Leaves implements OnInit,AfterViewInit {
 
       }
     })
+  }
+
+  ngOnDestroy(): void {
+    this.takeUntilSubj$.next()
   }
 }
